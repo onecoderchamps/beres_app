@@ -51,22 +51,6 @@ const LoginScreen = ({ navigation }) => {
         return;
       }
 
-      // Cek apakah akun sudah diaktifkan
-      const userSnapshot = await firestore()
-        .collection('users')
-        .where('phone', '==', formattedPhone)
-        .limit(1)
-        .get();
-      if (!userSnapshot.empty) {
-        const userDoc = userSnapshot.docs[0];
-        const userData = userDoc.data();
-        if (userData.isActive === false) {
-          Alert.alert("Akun Belum Diaktivasi", "Akun Anda belum diaktifkan. Silakan hubungi admin.");
-          setLoading(false);
-          return;
-        }
-      }
-
       const otp = generateOtp();
 
       const response = await fetch('https://app.saungwa.com/api/create-message', {
@@ -121,7 +105,7 @@ const LoginScreen = ({ navigation }) => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           <View style={styles.logoContainer}>
-            <Text style={styles.label}>Masukkan Nomor Ponsel</Text>
+            <Image source={require('../../asset/logo.png')} style={styles.logo} resizeMode="contain" />
           </View>
 
           <View style={styles.bottomContainer}>
@@ -162,8 +146,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    height: 120,
-    width: 120,
+    height: 200,
+    width: 200,
   },
   bottomContainer: {
     padding: 20,

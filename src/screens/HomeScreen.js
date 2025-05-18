@@ -8,6 +8,7 @@ import ImageSlider from './component/ImageSlider';
 import MiniCard from './component/MiniCard';
 import PatunganSummary from './component/PatunganSummary';
 import CategorySelector from './component/Category';
+import MembershipCard from './component/MembershipCard';
 
 const data = [
     'https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc',
@@ -38,16 +39,25 @@ const HomeScreen = () => {
         console.log('Artikel dipilih:', artikel.title);
     };
 
+    // Contoh data keanggotaan
+    const membershipData = {
+        saldo: 'Rp 2.500.000',
+        poin: 150,
+        level: 'Anggota Silver',
+    };
+
     return (
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
             {/* 1. Banner */}
             <ImageSlider images={data} style={styles.banner} />
 
-            <Text style={styles.sectionTitle}>Telusuri Pendanaan</Text>
+            <MembershipCard/>
+
+            <Text style={styles.sectionTitle}>Telusuri Kategori</Text>
             <CategorySelector onSelect={(cat) => console.log('Selected category:', cat)} />
 
             {/* 3. Promo */}
-            <Text style={styles.sectionTitle}>Promo</Text>
+            <Text style={styles.sectionTitle}>Promo Patungan</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
                 {[1, 2, 3].map((item) => (
                     <MiniCard key={item} />
@@ -62,7 +72,7 @@ const HomeScreen = () => {
                 ))}
             </ScrollView>
 
-            {/* 5. Artikel (dipindah ke atas PT) */}
+            {/* 5. Artikel */}
             <Text style={styles.sectionTitle}>Artikel</Text>
             <ScrollView
                 horizontal
@@ -86,16 +96,17 @@ const HomeScreen = () => {
 
             {/* 6. Nama PT */}
             <View style={styles.footer}>
-                <Text style={styles.ptText}>© 2025 PT Patungan Bersama</Text>
+                <Text style={styles.ptText}>© 2025 PT. Patungan Properti Internasional</Text>
             </View>
         </ScrollView>
     );
 };
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7F9FA',
+        backgroundColor: '#FFF',
     },
     banner: {
         width: '100%',
@@ -145,13 +156,44 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         borderBottomLeftRadius: 12,
         borderBottomRightRadius: 12,
-      },
-      
-      artikelTitle: {
+    },
+
+    artikelTitle: {
         color: '#fff',
         fontWeight: '600',
         fontSize: 14,
-      },
+    },
+    membershipContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        backgroundColor: '#214937',
+        paddingVertical: 15,
+        marginHorizontal: 15,
+        marginTop: 20,
+        borderRadius: 15,
+        marginBottom: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 4 },
+        elevation: 6,
+    },
+    membershipBox: {
+        alignItems: 'center',
+        flex: 1,
+        marginHorizontal: 8,
+    },
+    membershipLabel: {
+        color: '#BFD8B8',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    membershipValue: {
+        color: '#F3C623',
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginTop: 6,
+    },
 });
 
 export default HomeScreen;

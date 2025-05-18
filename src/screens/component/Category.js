@@ -3,10 +3,9 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const categories = [
-  { key: 'emas', label: 'Emas', icon: 'currency-usd' },
-  { key: 'rumah', label: 'Rumah', icon: 'home' },
-  { key: 'retail', label: 'Retail', icon: 'store' },
-  { key: 'ruko', label: 'Ruko', icon: 'market' },
+  { key: 'Arisan', label: 'Arisan', icon: 'gold' },
+  { key: 'Patungan', label: 'Patungan', icon: 'store' },
+  { key: 'retail', label: 'Retail', icon: 'home' },
   { key: 'bengkel', label: 'Bengkel', icon: 'car-wrench' },
   { key: 'rumah_ibadah', label: 'Rumah Ibadah', icon: 'mosque' },
 ];
