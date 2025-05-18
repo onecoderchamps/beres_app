@@ -1,9 +1,11 @@
-/* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
-import { Image, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AktifitasScreen from '../screens/AktifitasScreen';
+import AkunScreen from '../screens/AkunScreen';
+import Ionicons from 'react-native-vector-icons/Ionicons'; // import icon
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -12,56 +14,40 @@ const HomeStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Home" component={MainNavigator} />
   </Stack.Navigator>
-  
 );
 
 const MainNavigator = () => (
-  <Tab.Navigator screenOptions={{
-    tabBarStyle: styles.tabBarStyle, // Custom tab bar style
-    tabBarShowLabel: true, // Hide labels (optional)
-    tabBarActiveTintColor: '#000000', // Active icon color
-    tabBarInactiveTintColor: '#00000050', // Inactive icon color
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      tabBarStyle: styles.tabBarStyle,
+      tabBarShowLabel: true,
+      tabBarActiveTintColor: '#214937',
+      tabBarInactiveTintColor: '#777',
+      tabBarIcon: ({ focused, color, size }) => {
+        let iconName;
 
-  }}>
-    <Tab.Screen
-      name="Beranda"
-      component={HomeScreen}
-      options={{
-        tile: 'Home Page',
-        headerShown: false,
-        color: '#fff',
-        fontFamily:'Montserrat-Regular',
-        tabBarIcon: ({ focused }) => {
-          const size = focused ? 30 : 20;
-          return (
-            <Image
-              source={require('../asset/logo.png')}  // Local image
-              style={{ width: size + 20, height: size, tintColor:'#214937' }}
-            />
-          );
-        },
-      }}
-    />
+        if (route.name === 'Beranda') {
+          iconName = focused ? 'home' : 'home-outline';
+        } else if (route.name === 'Aktifitas') {
+          iconName = focused ? 'list' : 'list-outline';
+        } else if (route.name === 'Akun Saya') {
+          iconName = focused ? 'person' : 'person-outline';
+        }
+
+        return <Ionicons name={iconName} size={size} color={color} />;
+      },
+    })}
+  >
+    <Tab.Screen name="Beranda" component={HomeScreen} options={{ headerShown: false }} />
+    <Tab.Screen name="Aktifitas" component={AktifitasScreen} options={{ headerShown: false }} />
+    <Tab.Screen name="Akun Saya" component={AkunScreen} options={{ headerShown: false }} />
   </Tab.Navigator>
 );
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   tabBarStyle: {
     height: 60,
-  },
-  image: {
-    width: 30, // Specify width
-    height: 30, // Specify height
-  },
-  tabBarIconStyle: {
-    justifyContent: 'center',  // Center the icon vertically within the tab
-    alignItems: 'center',  // Center the icon horizontally within the tab
-    fontFamily:'Montserrat-Regular'
+    paddingBottom: 5,
   },
 });
 

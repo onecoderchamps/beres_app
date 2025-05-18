@@ -46,7 +46,7 @@ const LoginScreen = ({ navigation }) => {
     try {
       const exists = await checkPhoneInFirebase(formattedPhone);
       if (!exists) {
-        Alert.alert("Error", "Nomor ponsel tidak terdaftar.");
+        navigation.navigate('Register', { phoneNumber: formattedPhone });
         setLoading(false);
         return;
       }
@@ -57,7 +57,6 @@ const LoginScreen = ({ navigation }) => {
         .where('phone', '==', formattedPhone)
         .limit(1)
         .get();
-
       if (!userSnapshot.empty) {
         const userDoc = userSnapshot.docs[0];
         const userData = userDoc.data();
@@ -76,7 +75,7 @@ const LoginScreen = ({ navigation }) => {
         body: JSON.stringify({
           to: formattedPhone,
           authkey: "Z8hxOuMsQapmnfe3GFkNbmgWMuOLLcVxnU1oO6fufLFKy0bpS4",
-          appkey: "165ba4e8-713c-40e2-92a5-3696ae54d45f",
+          appkey: "f21f3e8b-820c-4598-895a-ae034cbb53d6",
           message: `Kode OTP Anda adalah ${otp}`
         }),
       });
@@ -122,7 +121,7 @@ const LoginScreen = ({ navigation }) => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           <View style={styles.logoContainer}>
-            <Image source={require('../asset/logo.png')} style={styles.logo} resizeMode="contain" />
+            <Text style={styles.label}>Masukkan Nomor Ponsel</Text>
           </View>
 
           <View style={styles.bottomContainer}>
