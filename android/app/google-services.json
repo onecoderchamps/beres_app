@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "7521046613",
+    "project_id": "beresapp-2025",
+    "storage_bucket": "beresapp-2025.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:7521046613:android:d673118ae7cbbfa5a684dc",
+        "android_client_info": {
+          "package_name": "com.beresapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJ3Zjfit5u2OIpR6TAgbxa8GbraIVMJPc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
