@@ -3,7 +3,8 @@ import {
   View, Text, TextInput, Alert,
   StyleSheet, Image, KeyboardAvoidingView,
   Platform, TouchableWithoutFeedback, Keyboard,
-  TouchableOpacity
+  TouchableOpacity,
+  StatusBar
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 
@@ -98,6 +99,7 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <StatusBar backgroundColor="#214937" barStyle="dark-content" />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           <View style={styles.bottomContainer}>
@@ -149,7 +151,7 @@ const RegisterScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#214937",
+    backgroundColor: "#fff",
     justifyContent: 'space-between',
   },
   logoContainer: {
@@ -168,7 +170,7 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 8,
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
   },
   input: {
     borderWidth: 1,
@@ -178,12 +180,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 16,
     backgroundColor: '#fff',
+    elevation:1
   },
   button: {
     backgroundColor: '#F3C623',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
+    elevation:1
   },
   buttonLoading: {
     backgroundColor: '#777',

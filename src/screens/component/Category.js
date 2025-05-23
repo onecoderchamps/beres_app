@@ -5,9 +5,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const categories = [
   { key: 'Arisan', label: 'Arisan', icon: 'gold' },
   { key: 'Patungan', label: 'Patungan', icon: 'store' },
-  { key: 'retail', label: 'Retail', icon: 'home' },
-  { key: 'bengkel', label: 'Bengkel', icon: 'car-wrench' },
-  { key: 'rumah_ibadah', label: 'Rumah Ibadah', icon: 'mosque' },
+  { key: 'Koperasi', label: 'Koperasi', icon: 'home' },
+  { key: 'rumah_ibadah', label: 'Sedekah', icon: 'mosque' },
 ];
 
 const CategorySelector = ({ onSelect }) => {
@@ -20,29 +19,25 @@ const CategorySelector = ({ onSelect }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false} 
-        contentContainerStyle={styles.scrollContainer}
-      >
+      <View style={styles.scrollContainer}>
         {categories.map((cat) => (
           <TouchableOpacity
             key={cat.key}
-            style={[styles.button, selected === cat.key && styles.selectedButton]}
+            style={[styles.button]}
             onPress={() => handlePress(cat)}
           >
             <MaterialCommunityIcons
               name={cat.icon}
               size={28}
-              color={selected === cat.key ? '#fff' : '#555'}
+              color={'#555'}
               style={styles.icon}
             />
-            <Text style={[styles.text, selected === cat.key && styles.selectedText]}>
+            <Text style={[styles.text]}>
               {cat.label}
             </Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -51,9 +46,10 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: 15,
     marginVertical: 10,
+    justifyContent:"center"
   },
   scrollContainer: {
-    paddingHorizontal: 5,
+    flexDirection:'row'
   },
   button: {
     paddingVertical: 8,

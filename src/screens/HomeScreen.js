@@ -1,7 +1,8 @@
 import React from 'react';
 import {
     View, Text, Image, StyleSheet, ScrollView,
-    TouchableOpacity
+    TouchableOpacity,
+    StatusBar
 } from 'react-native';
 import PatunganCard from './component/PatunganCard';
 import ImageSlider from './component/ImageSlider';
@@ -9,6 +10,7 @@ import MiniCard from './component/MiniCard';
 import PatunganSummary from './component/PatunganSummary';
 import CategorySelector from './component/Category';
 import MembershipCard from './component/MembershipCard';
+import ArisanCard from './component/ArisanView';
 
 const data = [
     'https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc',
@@ -48,10 +50,11 @@ const HomeScreen = () => {
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
+            <StatusBar backgroundColor="#214937" barStyle="light-content" />
             {/* 1. Banner */}
             <ImageSlider images={data} style={styles.banner} />
 
-            <MembershipCard/>
+            <MembershipCard />
 
             <Text style={styles.sectionTitle}>Telusuri Kategori</Text>
             <CategorySelector onSelect={(cat) => console.log('Selected category:', cat)} />
@@ -60,7 +63,9 @@ const HomeScreen = () => {
             <Text style={styles.sectionTitle}>Promo Patungan</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
                 {[1, 2, 3].map((item) => (
-                    <MiniCard key={item} />
+                    <TouchableOpacity>
+                        <MiniCard key={item} />
+                    </TouchableOpacity>
                 ))}
             </ScrollView>
 
@@ -68,7 +73,9 @@ const HomeScreen = () => {
             <Text style={styles.sectionTitle}>Arisan Terkini</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
                 {[1, 2, 3].map((item) => (
-                    <MiniCard key={item} />
+                    <TouchableOpacity>
+                        <ArisanCard key={item} />
+                    </TouchableOpacity>
                 ))}
             </ScrollView>
 

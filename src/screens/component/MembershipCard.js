@@ -11,26 +11,28 @@ const MembershipCard = () => {
           <Text style={styles.membershipLabel}>Saldo</Text>
           <Text style={styles.membershipValue}>Rp. 1.786.292</Text>
         </View>
-        <View style={styles.membershipBox}>
-          <Text style={styles.membershipLabel}>Point</Text>
-          <Text style={styles.membershipValue}>Pts 0</Text>
+        <View style={styles.membershipBox2}>
+          <TouchableOpacity style={{ alignItems: 'center' }}>
+            <Icon name="plus-circle-outline" size={24} color="#000" />
+            <Text style={styles.membershipValue2}>TopUp</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
       {/* Garis Pemisah */}
-      <View
+      {/* <View
         style={{
           borderBottomColor: '#BFD8B8',
           borderBottomWidth: 1,
           marginVertical: 10,
         }}
-      />
+      /> */}
 
-      {/* Tombol Aksi dengan Ikon */}
+      {/* Tombol Aksi dengan Ikon
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.actionButton}>
           <Icon name="file-document-outline" size={24} color="#F3C623" />
-          <Text style={styles.buttonLabel}>Koperasi</Text>
+          <Text style={styles.buttonLabel}>Iuran</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton}>
@@ -47,7 +49,7 @@ const MembershipCard = () => {
           <Icon name="plus-circle-outline" size={24} color="#F3C623" />
           <Text style={styles.buttonLabel}>Topup</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -55,7 +57,7 @@ const MembershipCard = () => {
 const styles = StyleSheet.create({
   membershipContainer: {
     flexDirection: 'column',
-    backgroundColor: '#214937',
+    backgroundColor: '#E0E0E0',
     paddingVertical: 15,
     marginHorizontal: 15,
     borderRadius: 15,
@@ -64,23 +66,40 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
     paddingHorizontal: 10,
   },
   membershipBox: {
-    alignItems: 'center',
+    // alignItems: 'center',
+    flex: 1,
+  },
+  membershipBox2: {
+    alignItems: 'flex-end', // yang benar
+    justifyContent: 'center',
     flex: 1,
   },
   membershipLabel: {
-    color: '#BFD8B8',
+    color: '#000',
     fontSize: 16,
     fontWeight: '600',
   },
+  membershipLabel2: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'right',
+  },
   membershipValue: {
-    color: '#F3C623',
+    color: '#000',
     fontSize: 20,
     fontWeight: 'bold',
     marginTop: 6,
+  },
+  membershipValue2: {
+    color: '#000',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginTop: 6,
+    textAlign: 'right',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -92,7 +111,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonLabel: {
-    color: '#BFD8B8',
+    color: '#000',
     fontSize: 12,
     textAlign: 'center',
     marginTop: 4,

@@ -22,9 +22,9 @@ export default function App() {
           title: 'OTP',
           headerShown: true,
           headerStyle: {
-            backgroundColor: '#214937', // Mengatur warna latar belakang header
+            backgroundColor: '#fff', // Mengatur warna latar belakang header
           },
-          headerTintColor: '#fff', // Mengatur warna teks header menjadi putih
+          headerTintColor: '#000', // Mengatur warna teks header menjadi putih
         }}
       />
       <Stack.Screen
@@ -34,9 +34,9 @@ export default function App() {
           title: 'Register',
           headerShown: true,
           headerStyle: {
-            backgroundColor: '#214937', // Mengatur warna latar belakang header
+            backgroundColor: '#fff', // Mengatur warna latar belakang header
           },
-          headerTintColor: '#fff', // Mengatur warna teks header menjadi putih
+          headerTintColor: '#000', // Mengatur warna teks header menjadi putih
         }}
       />
     </Stack.Navigator>

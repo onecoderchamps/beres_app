@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -51,7 +51,8 @@ const OtpVerificationScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Masukkan OTP</Text>
+      <StatusBar backgroundColor="#214937" barStyle="dark-content" />
+      <Text style={styles.label}>Masukkan OTP yang kami kirim melalui whatsapp kamu</Text>
       <TextInput
         style={styles.input}
         placeholder="Masukkan OTP"
@@ -77,12 +78,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#214937",
+    backgroundColor: "#fff",
   },
   label: {
     marginBottom: 10,
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
   },
   input: {
     borderWidth: 1,
@@ -93,6 +94,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
     width: '100%',
+    elevation:1
   },
   button: {
     backgroundColor: '#F3C623',  // Same background as the header color
@@ -100,6 +102,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    elevation:1
   },
   buttonLoading: {
     backgroundColor: '#777',  // Darken the color when loading

@@ -12,6 +12,7 @@ const sampleData = {
   hargaLot: 'Rp 10.000.000',
   hargaJual: 'Rp 500.000.000',
   type: 'rumah', // jenis aset
+  lotTersedia: 3
 };
 
 const iconMap = {
@@ -33,6 +34,12 @@ const iconMap = {
   },
 };
 
+const formatHargaToK = (hargaString) => {
+  const number = parseInt(hargaString.replace(/[^\d]/g, ''), 10);
+  if (isNaN(number)) return hargaString;
+  return number >= 1000 ? `${(number / 1000).toLocaleString('id-ID')} K` : number.toLocaleString('id-ID');
+};
+
 const MiniCard = ({ data = sampleData }) => {
   const iconInfo = iconMap[data.type] || iconMap['aset'];
 
@@ -40,12 +47,19 @@ const MiniCard = ({ data = sampleData }) => {
     <View style={[styles.card, { width: cardWidth }]}>
       <View>
         <Image source={{ uri: data.image }} style={styles.image} />
+
+        {/* Badge Ikon */}
         <View style={styles.badgeContainer}>
           <MaterialCommunityIcons
             name={iconInfo.name}
             size={20}
             color={iconInfo.color}
           />
+        </View>
+
+        {/* Badge Miring "3 Lot Tersedia" */}
+        <View style={styles.ribbonContainer}>
+          <Text style={styles.ribbonText}>Sisa {data.lotTersedia}</Text>
         </View>
       </View>
 
@@ -56,11 +70,11 @@ const MiniCard = ({ data = sampleData }) => {
         <View style={styles.row}>
           <View style={styles.infoBox}>
             <Text style={styles.label}>Harga/Lot</Text>
-            <Text style={styles.value} numberOfLines={1}>{data.hargaLot}</Text>
+            <Text style={styles.value} numberOfLines={1}>Rp {formatHargaToK(data.hargaLot)}</Text>
           </View>
           <View style={styles.infoBox}>
-            <Text style={styles.label}>Harga Jual</Text>
-            <Text style={styles.value} numberOfLines={1}>{data.hargaJual}</Text>
+            <Text style={styles.label}>Harga</Text>
+            <Text style={styles.value} numberOfLines={1}>Rp {formatHargaToK(data.hargaJual)}</Text>
           </View>
         </View>
       </View>
@@ -74,12 +88,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginHorizontal: 5,
     marginVertical: 10,
-    elevation: 3,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 3 },
     overflow: 'hidden',
+    borderColor:'#000',
+    borderWidth:0.2
   },
   image: {
     width: '100%',
@@ -94,6 +109,23 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  ribbonContainer: {
+    position: 'absolute',
+    top: 10,
+    right: -30,
+    backgroundColor: '#F3C623',
+    paddingVertical: 4,
+    paddingHorizontal: 40,
+    transform: [{ rotate: '45deg' }],
+    borderRadius: 4,
+    elevation: 2,
+  },
+  ribbonText: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 10,
+    textAlign: 'center',
   },
   content: {
     padding: 8,

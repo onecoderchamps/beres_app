@@ -3,7 +3,8 @@ import {
   View, Text, TextInput, Button, Alert,
   StyleSheet, Image, KeyboardAvoidingView,
   Platform, TouchableWithoutFeedback, Keyboard,
-  TouchableOpacity
+  TouchableOpacity,
+  StatusBar
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 
@@ -101,9 +102,13 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
+          <StatusBar backgroundColor="#214937" barStyle="dark-content" />
           <View style={styles.logoContainer}>
             <Image source={require('../../asset/logo.png')} style={styles.logo} resizeMode="contain" />
           </View>
@@ -137,7 +142,7 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#214937",
+    // backgroundColor: "#214937",
     justifyContent: 'space-between',
   },
   logoContainer: {
@@ -156,7 +161,7 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 10,
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
   },
   input: {
     borderWidth: 1,
@@ -166,6 +171,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 16,
     backgroundColor: '#fff',
+    elevation: 1
   },
   button: {
     backgroundColor: '#F3C623',  // Same background as the header color
@@ -173,6 +179,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    elevation: 1
   },
   buttonLoading: {
     backgroundColor: '#777',  // Darken the color when loading
