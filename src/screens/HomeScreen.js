@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     artikelCard: {
+        marginTop:10,
         marginRight: 12,
         borderRadius: 12,
         overflow: 'hidden',
