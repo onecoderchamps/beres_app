@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import PatunganComponent from '../component/PatunganView';
 import ArisanCard from '../component/ArisanView';
+import ArisanData from '../../dummy/arisan.json'; // Pastikan path ini sesuai dengan struktur proyek Anda
 
 const { width } = Dimensions.get('window');
 
@@ -35,9 +36,9 @@ const ArisanScreen = ({navigation}) => {
                     <ActivityIndicator size="large" color="#214937" style={{ marginTop: 30 }} />
                 ) : (
                     <View style={styles.cardContainer}>
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+                        {ArisanData.map((item) => (
                             <TouchableOpacity onPress={()=> navigation.navigate("ArisanDetail")} key={item} style={styles.card}>
-                                <ArisanCard />
+                                <ArisanCard data={item}/>
                             </TouchableOpacity>
                         ))}
                     </View>
@@ -50,7 +51,7 @@ const ArisanScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     backgroundStyle: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#fff',
     },
     scrollViewContent: {
         paddingHorizontal: 10,

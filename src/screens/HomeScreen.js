@@ -5,93 +5,69 @@ import {
     StatusBar,
     Dimensions
 } from 'react-native';
-import PatunganCard from './component/PatunganCard';
 import ImageSlider from './component/ImageSlider';
-import MiniCard from './component/PatunganView';
-import PatunganSummary from './component/PatunganSummary';
+import PatunganCard from './component/PatunganView';
 import CategorySelector from './component/Category';
 import MembershipCard from './component/MembershipCard';
 import ArisanCard from './component/ArisanView';
 
+import artikelData from './../dummy/artikel.json'; // Pastikan path ini sesuai dengan struktur proyek Anda
+import data from './../dummy/banner.json'; // Pastikan path ini sesuai dengan struktur proyek Anda
+import patunganData from './../dummy/patungan.json';
+import arisanData from './../dummy/arisan.json'; // Pastikan path ini sesuai dengan struktur proyek Anda
+
 const { width } = Dimensions.get('window');
 
-const data = [
-    'https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc',
-    'https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image3_1728706413451.jpeg.enc',
-    'https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image2_1728706413397.jpeg.enc'
-];
-
-const artikelData = [
-    {
-        id: 1,
-        image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
-        title: 'Tips Investasi Properti',
-    },
-    {
-        id: 2,
-        image: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=800&q=80',
-        title: 'Cara Mengelola Keuangan',
-    },
-    {
-        id: 3,
-        image: 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=800&q=80',
-        title: 'Strategi Patungan Efektif',
-    },
-];
-
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({ navigation }) => {
     const handleArtikelPress = (artikel) => {
         console.log('Artikel dipilih:', artikel.title);
     };
 
-    // Contoh data keanggotaan
-    const membershipData = {
-        saldo: 'Rp 2.500.000',
-        poin: 150,
-        level: 'Anggota Silver',
-    };
+    const handleCategorySelect = (cat) => {
+        if (cat === 'Arisan') {
+            navigation.navigate('Arisan');
+        } else if (cat === 'Patungan') {
+            navigation.navigate('Patungan');
+        } else if (cat === 'Koperasi') {
+            navigation.navigate('Koperasi');
+        } else if (cat === 'Sedekah') {
+            navigation.navigate('Sedekah');
+        }
+    }
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
             <StatusBar backgroundColor="#214937" barStyle="light-content" />
             {/* 1. Banner */}
-            <ImageSlider images={data}  style={styles.banner} />
+            <ImageSlider images={data} style={styles.banner} />
 
             <MembershipCard />
 
             <Text style={styles.sectionTitle}>Telusuri Kategori</Text>
-            <CategorySelector onSelect={(cat) => 
-                {
-                    if (cat === 'Arisan') {
-                        navigation.navigate('Arisan');
-                    } else if (cat === 'Patungan') {
-                        navigation.navigate('Patungan');
-                    } else if (cat === 'Koperasi') {
-                        navigation.navigate('Koperasi');
-                    } else if (cat === 'Sedekah') {
-                        navigation.navigate('Sedekah');
-                    }
-                }
-            } />
+            <CategorySelector onSelect={handleCategorySelect} />
 
             {/* 3. Promo */}
             <Text style={styles.sectionTitle}>Promo Patungan</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
-                {[1, 2, 3].map((item) => (
-                    <TouchableOpacity onPress={()=> navigation.navigate("PatunganDetail")} style={{ marginHorizontal: 5, marginVertical:10 }} key={item}>
-                        <MiniCard key={item} />
-                    </TouchableOpacity>
-                ))}
+                {patunganData.map((item) =>
+                    item.isPromo ? (
+                        <TouchableOpacity onPress={() => navigation.navigate("PatunganDetail")} style={{ marginHorizontal: 5, marginVertical: 10, width: width/1.8 }} key={item.id || item}>
+                            <PatunganCard data={item}/> 
+                        </TouchableOpacity>
+                    ) : null
+                )}
             </ScrollView>
 
             {/* 4. Arisan Terkini */}
             <Text style={styles.sectionTitle}>Arisan Terkini</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
-                {[1, 2, 3].map((item) => (
-                    <TouchableOpacity onPress={()=> navigation.navigate("ArisanDetail")} style={{ marginHorizontal: 5, marginVertical:10, width:width/2 }} key={item}>
-                        <ArisanCard key={item} />
+                {arisanData.map((item) => 
+                    item.isPromo ? (
+                    <TouchableOpacity onPress={() => navigation.navigate("ArisanDetail")} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 2 }} key={item}>
+                        <ArisanCard data={item} />
                     </TouchableOpacity>
-                ))}
+                    ) : null
+                )}
             </ScrollView>
 
             {/* 5. Artikel */}
@@ -141,7 +117,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     artikelCard: {
-        marginTop:10,
+        marginTop: 10,
         marginRight: 12,
         borderRadius: 12,
         overflow: 'hidden',

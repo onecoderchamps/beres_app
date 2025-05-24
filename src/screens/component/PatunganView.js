@@ -5,15 +5,15 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const { width } = Dimensions.get('window');
 const cardWidth = (width - 60) / 2;
 
-const sampleData = {
-  image: 'https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc',
-  nama: 'Rumah Rimbo Datar',
-  alamat: 'Jl. Rimbo Datar No.36 ... Sumatera Barat',
-  hargaLot: 'Rp 10.000.000',
-  hargaJual: 'Rp 500.000.000',
-  type: 'rumah', // jenis aset
-  lotTersedia: 3
-};
+// const sampleData = {
+//   image: 'https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc',
+//   nama: 'Rumah Rimbo Datar',
+//   alamat: 'Jl. Rimbo Datar No.36 ... Sumatera Barat',
+//   hargaLot: 'Rp 10.000.000',
+//   hargaJual: 'Rp 500.000.000',
+//   type: 'rumah', // jenis aset
+//   lotTersedia: 3
+// };
 
 const iconMap = {
   rumah: {
@@ -40,7 +40,7 @@ const formatHargaToK = (hargaString) => {
   return number >= 1000 ? `${(number / 1000).toLocaleString('id-ID')} K` : number.toLocaleString('id-ID');
 };
 
-const PatunganComponent = ({ data = sampleData }) => {
+const PatunganComponent = ({ data }) => {
   const iconInfo = iconMap[data.type] || iconMap['aset'];
 
   return (
@@ -58,14 +58,21 @@ const PatunganComponent = ({ data = sampleData }) => {
         </View>
 
         {/* Badge Miring "3 Lot Tersedia" */}
-        <View style={styles.ribbonContainer}>
-          <Text style={styles.ribbonText}>Sisa {data.lotTersedia}</Text>
-        </View>
+        {data.lotTersedia > 0 &&
+          <View style={styles.ribbonContainer}>
+            <Text style={styles.ribbonText}>Sisa {data.lotTersedia}</Text>
+          </View>
+        }
       </View>
+
 
       <View style={styles.content}>
         <Text style={styles.nama} numberOfLines={1}>{data.nama}</Text>
         <Text style={styles.alamat} numberOfLines={2}>{data.alamat}</Text>
+
+        <View style={styles.progressBarContainer}>
+          <View style={[styles.progressBar, { width: data.percentage }]} />
+        </View>
 
         <View style={styles.row}>
           <View style={styles.infoBox}>
@@ -91,8 +98,8 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 3 },
     overflow: 'hidden',
-    borderColor:'#000',
-    borderWidth:0.2
+    borderColor: '#000',
+    borderWidth: 0.2
   },
   image: {
     width: '100%',
@@ -156,6 +163,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
     marginTop: 2,
+  },
+  progressBarContainer: {
+    height: 6,
+    backgroundColor: '#eee',
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginVertical: 6,
+    marginHorizontal: 0
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#F3C623',
+  },
+  progressText: {
+    fontSize: 12,
+    color: '#777',
+    alignSelf: 'flex-end',
+    marginBottom: 6,
   },
 });
 

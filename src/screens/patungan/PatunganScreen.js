@@ -13,6 +13,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import PatunganComponent from '../component/PatunganView';
+import PatunganData from '../../dummy/patungan.json'
 
 const { width } = Dimensions.get('window');
 
@@ -34,9 +35,9 @@ const PatunganScreen = ({navigation}) => {
                     <ActivityIndicator size="large" color="#214937" style={{ marginTop: 30 }} />
                 ) : (
                     <View style={styles.cardContainer}>
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+                        {PatunganData.map((item) => (
                             <TouchableOpacity onPress={()=> navigation.navigate("PatunganDetail")} key={item} style={styles.card}>
-                                <PatunganComponent />
+                                <PatunganComponent key={item} data={item}/>
                             </TouchableOpacity>
                         ))}
                     </View>
@@ -49,7 +50,7 @@ const PatunganScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     backgroundStyle: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#fff',
     },
     scrollViewContent: {
         paddingHorizontal: 10,

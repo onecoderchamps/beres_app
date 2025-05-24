@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const banners = [
     { id: '1', color: '#ff7675', text: 'Banner 1' },
@@ -35,6 +35,7 @@ export default function PatunganDetail() {
     const [modalVisible, setModalVisible] = useState(false);
     const [jumlahLot, setJumlahLot] = useState(1);
     const [nominal, setNominal] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
 
     const totalSaldo = 500000;
     const iuranWajibPerLot = 100000;
@@ -61,7 +62,6 @@ export default function PatunganDetail() {
                     {
                         text: 'Topup Sekarang',
                         onPress: () => {
-                            // Implementasi navigasi/topup di sini
                             Alert.alert('Topup', 'Navigasi ke halaman topup saldo.');
                         },
                     },
@@ -78,6 +78,11 @@ export default function PatunganDetail() {
         setModalVisible(false);
     };
 
+    const handleScroll = (event) => {
+        const scrollPosition = event.nativeEvent.contentOffset.x;
+        const index = Math.round(scrollPosition / width);
+        setCurrentIndex(index);
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -89,6 +94,8 @@ export default function PatunganDetail() {
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 style={styles.bannerContainer}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
             >
                 {banners.map((banner) => (
                     <View
@@ -99,6 +106,19 @@ export default function PatunganDetail() {
                     </View>
                 ))}
             </ScrollView>
+
+            {/* Dots Indicator */}
+            <View style={styles.dotsContainer}>
+                {banners.map((_, index) => (
+                    <View
+                        key={index}
+                        style={[
+                            styles.dot,
+                            currentIndex === index && styles.activeDot,
+                        ]}
+                    />
+                ))}
+            </View>
 
             {/* Tab Bar */}
             <View style={styles.tabBarContainer}>
@@ -221,6 +241,29 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 24,
         fontWeight: 'bold',
+    },
+    dotsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 10,
+        position: 'absolute',
+        top: height/4.2,
+        left: 10,
+        zIndex: 1,
+        backgroundColor: 'transparent',
+    },
+    dot: {
+        width: 15,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#dfe6e9',
+        marginHorizontal: 4,
+    },
+    activeDot: {
+        backgroundColor: '#214937',
+        width: 15,
+        height: 10,
     },
     tabBarContainer: {
         flexDirection: 'row',

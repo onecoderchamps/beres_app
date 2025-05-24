@@ -3,14 +3,35 @@ import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { width } = Dimensions.get('window');
-const cardWidth = (width - 30) / 2;
+const cardWidth = (width - 60) / 2;
 
-const sampleArisan = {
-  group: 'Group A',
-  targetEmas: '10 gram',
-  biayaBulanan: 'Rp 1.950.000',
-  sisaSlot: 3,
-  image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
+// const sampleData = {
+//   image: 'https://api.Arisanproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc',
+//   nama: 'Rumah Rimbo Datar',
+//   alamat: 'Jl. Rimbo Datar No.36 ... Sumatera Barat',
+//   hargaLot: 'Rp 10.000.000',
+//   hargaJual: 'Rp 500.000.000',
+//   type: 'rumah', // jenis aset
+//   lotTersedia: 3
+// };
+
+const iconMap = {
+  rumah: {
+    name: 'home-outline',
+    color: '#4CAF50',
+  },
+  retail: {
+    name: 'storefront-outline',
+    color: '#2196F3',
+  },
+  ruko: {
+    name: 'office-building-marker',
+    color: '#FF9800',
+  },
+  aset: {
+    name: 'warehouse',
+    color: '#9C27B0',
+  },
 };
 
 const formatHargaToK = (hargaString) => {
@@ -19,34 +40,48 @@ const formatHargaToK = (hargaString) => {
   return number >= 1000 ? `${(number / 1000).toLocaleString('id-ID')} K` : number.toLocaleString('id-ID');
 };
 
-const ArisanCard = ({ data = sampleArisan }) => {
+const ArisanComponent = ({ data }) => {
+  const iconInfo = iconMap[data.type] || iconMap['aset'];
+
   return (
     <View style={[styles.card]}>
       <View>
         <Image source={{ uri: data.image }} style={styles.image} />
 
-        {/* Badge Logo Emas */}
-        <View style={styles.goldBadge}>
-          <MaterialCommunityIcons name="gold" size={20} color="#000" />
+        {/* Badge Ikon */}
+        <View style={styles.badgeContainer}>
+          <MaterialCommunityIcons
+            name={iconInfo.name}
+            size={20}
+            color={iconInfo.color}
+          />
         </View>
 
-        {/* Badge Sisa Slot */}
-        <View style={styles.slotBadge}>
-          <Text style={styles.slotText}>Sisa {data.sisaSlot} Slot</Text>
-        </View>
+        {/* Badge Miring "3 Lot Tersedia" */}
+        {data.lotTersedia > 0 &&
+          <View style={styles.ribbonContainer}>
+            <Text style={styles.ribbonText}>Sisa {data.lotTersedia}</Text>
+          </View>
+        }
       </View>
 
+
       <View style={styles.content}>
-        <Text style={styles.group}>{data.group}</Text>
+        <Text style={styles.nama} numberOfLines={1}>{data.nama}</Text>
+        {/* <Text style={styles.alamat} numberOfLines={2}>{data.alamat}</Text> */}
+
+        <View style={styles.progressBarContainer}>
+          <View style={[styles.progressBar, { width: data.percentage }]} />
+        </View>
 
         <View style={styles.row}>
           <View style={styles.infoBox}>
             <Text style={styles.label}>Emas</Text>
-            <Text style={styles.value}>{formatHargaToK(data.targetEmas)} Gr</Text>
+            <Text style={styles.value} numberOfLines={1}>{formatHargaToK(data.hargaLot)} Gr</Text>
           </View>
           <View style={styles.infoBox}>
-            <Text style={styles.label}>Iuran</Text>
-            <Text style={styles.value}>Rp {formatHargaToK(data.biayaBulanan)}</Text>
+            <Text style={styles.label}>Harga / Bulan</Text>
+            <Text style={styles.value} numberOfLines={1}>Rp {formatHargaToK(data.hargaJual)}</Text>
           </View>
         </View>
       </View>
@@ -58,48 +93,58 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     backgroundColor: '#fff',
-    overflow: 'hidden',
-    borderColor:'#000',
-    borderWidth:0.2,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 3 },
+    overflow: 'hidden',
+    borderColor: '#000',
+    borderWidth: 0.2
   },
   image: {
     width: '100%',
     height: cardWidth * 0.6,
   },
-  goldBadge: {
+  badgeContainer: {
     position: 'absolute',
     top: 8,
     left: 8,
     backgroundColor: 'rgba(255,255,255,0.9)',
     padding: 4,
     borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  slotBadge: {
+  ribbonContainer: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: 10,
+    right: -30,
     backgroundColor: '#F3C623',
     paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 12,
+    paddingHorizontal: 40,
+    transform: [{ rotate: '45deg' }],
+    borderRadius: 4,
+    elevation: 2,
   },
-  slotText: {
-    fontSize: 10,
-    fontWeight: 'bold',
+  ribbonText: {
     color: '#000',
+    fontWeight: 'bold',
+    fontSize: 10,
+    textAlign: 'center',
   },
   content: {
-    padding: 10,
+    padding: 8,
   },
-  group: {
-    fontSize: 16,
+  nama: {
+    fontSize: cardWidth * 0.08,
     fontWeight: 'bold',
     color: '#000',
-    marginBottom: 10,
+    marginBottom: 2,
+  },
+  alamat: {
+    fontSize: cardWidth * 0.06,
+    color: '#666',
+    marginBottom: 8,
   },
   row: {
     flexDirection: 'row',
@@ -107,16 +152,36 @@ const styles = StyleSheet.create({
   },
   infoBox: {
     flex: 1,
+    alignItems: 'center',
   },
   label: {
-    fontSize: 12,
+    fontSize: cardWidth * 0.05,
     color: '#777',
   },
   value: {
-    fontSize: 14,
+    fontSize: cardWidth * 0.06,
     fontWeight: 'bold',
     color: '#000',
+    marginTop: 2,
+  },
+  progressBarContainer: {
+    height: 6,
+    backgroundColor: '#eee',
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginVertical: 6,
+    marginHorizontal: 0
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#F3C623',
+  },
+  progressText: {
+    fontSize: 12,
+    color: '#777',
+    alignSelf: 'flex-end',
+    marginBottom: 6,
   },
 });
 
-export default ArisanCard;
+export default ArisanComponent;
