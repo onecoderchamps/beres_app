@@ -59,7 +59,7 @@ const AktifitasScreen = () => {
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
-      <StatusBar backgroundColor="#214937" barStyle="light-content" />
+      <StatusBar backgroundColor="#214937" barStyle="dark-content" />
       <ScrollView contentContainerStyle={{ padding: 20,marginVertical: 20 }}>
         <Text style={styles.header}>Aktivitas Aset Patungan</Text>
 

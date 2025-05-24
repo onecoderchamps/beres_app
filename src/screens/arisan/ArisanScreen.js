@@ -17,14 +17,14 @@ import ArisanCard from '../component/ArisanView';
 
 const { width } = Dimensions.get('window');
 
-const ArisanScreen = () => {
+const ArisanScreen = ({navigation}) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Simulasi fetch data (ganti dengan Firestore jika perlu)
         setTimeout(() => {
             setLoading(false);
-        }, 1000);
+        }, 500);
     }, []);
 
     return (
@@ -36,7 +36,7 @@ const ArisanScreen = () => {
                 ) : (
                     <View style={styles.cardContainer}>
                         {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-                            <TouchableOpacity key={item} style={styles.card}>
+                            <TouchableOpacity onPress={()=> navigation.navigate("ArisanDetail")} key={item} style={styles.card}>
                                 <ArisanCard />
                             </TouchableOpacity>
                         ))}

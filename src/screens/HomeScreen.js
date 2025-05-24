@@ -2,7 +2,8 @@ import React from 'react';
 import {
     View, Text, Image, StyleSheet, ScrollView,
     TouchableOpacity,
-    StatusBar
+    StatusBar,
+    Dimensions
 } from 'react-native';
 import PatunganCard from './component/PatunganCard';
 import ImageSlider from './component/ImageSlider';
@@ -11,6 +12,8 @@ import PatunganSummary from './component/PatunganSummary';
 import CategorySelector from './component/Category';
 import MembershipCard from './component/MembershipCard';
 import ArisanCard from './component/ArisanView';
+
+const { width } = Dimensions.get('window');
 
 const data = [
     'https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc',
@@ -75,7 +78,7 @@ const HomeScreen = ({navigation}) => {
             <Text style={styles.sectionTitle}>Promo Patungan</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
                 {[1, 2, 3].map((item) => (
-                    <TouchableOpacity style={{ marginHorizontal: 5, marginVertical:10 }} key={item}>
+                    <TouchableOpacity onPress={()=> navigation.navigate("PatunganDetail")} style={{ marginHorizontal: 5, marginVertical:10 }} key={item}>
                         <MiniCard key={item} />
                     </TouchableOpacity>
                 ))}
@@ -85,7 +88,7 @@ const HomeScreen = ({navigation}) => {
             <Text style={styles.sectionTitle}>Arisan Terkini</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
                 {[1, 2, 3].map((item) => (
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=> navigation.navigate("ArisanDetail")} style={{ marginHorizontal: 5, marginVertical:10, width:width/2 }} key={item}>
                         <ArisanCard key={item} />
                     </TouchableOpacity>
                 ))}

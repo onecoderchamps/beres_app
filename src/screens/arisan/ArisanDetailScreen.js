@@ -13,10 +13,11 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import PatunganComponent from '../component/PatunganView';
+import ArisanCard from '../component/ArisanView';
 
 const { width } = Dimensions.get('window');
 
-const PatunganScreen = ({navigation}) => {
+const ArisanDetailScreen = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -35,9 +36,9 @@ const PatunganScreen = ({navigation}) => {
                 ) : (
                     <View style={styles.cardContainer}>
                         {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-                            <TouchableOpacity onPress={()=> navigation.navigate("PatunganDetail")} key={item} style={styles.card}>
-                                <PatunganComponent />
-                            </TouchableOpacity>
+                            <View style={styles.cardContainer}>
+                                <Text>Detail Arisan</Text>
+                            </View>
                         ))}
                     </View>
                 )}
@@ -68,4 +69,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PatunganScreen;
+export default ArisanDetailScreen;

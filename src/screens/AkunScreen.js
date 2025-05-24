@@ -55,7 +55,7 @@ const AkunScreen = () => {
 
     return (
         <SafeAreaView style={styles.backgroundStyle}>
-            <StatusBar backgroundColor="#214937" barStyle="light-content" />
+            <StatusBar backgroundColor="#214937" barStyle="dark-content" />
             <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
 
                 {/* PROFIL */}

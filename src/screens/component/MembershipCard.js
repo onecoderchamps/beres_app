@@ -9,7 +9,7 @@ const MembershipCard = () => {
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={styles.membershipBox}>
           <Text style={styles.membershipLabel}>Saldo</Text>
-          <Text style={styles.membershipValue}>Rp. 1.786.292</Text>
+          <Text style={styles.membershipValue}>Rp. 0</Text>
         </View>
         <View style={styles.membershipBox2}>
           <TouchableOpacity style={{ alignItems: 'center' }}>

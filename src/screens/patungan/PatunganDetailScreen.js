@@ -16,7 +16,7 @@ import PatunganComponent from '../component/PatunganView';
 
 const { width } = Dimensions.get('window');
 
-const PatunganScreen = ({navigation}) => {
+const PatunganDetailScreen = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -34,11 +34,7 @@ const PatunganScreen = ({navigation}) => {
                     <ActivityIndicator size="large" color="#214937" style={{ marginTop: 30 }} />
                 ) : (
                     <View style={styles.cardContainer}>
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-                            <TouchableOpacity onPress={()=> navigation.navigate("PatunganDetail")} key={item} style={styles.card}>
-                                <PatunganComponent />
-                            </TouchableOpacity>
-                        ))}
+                        <Text>Detail Patungan</Text>
                     </View>
                 )}
             </ScrollView>
@@ -68,4 +64,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PatunganScreen;
+export default PatunganDetailScreen;
