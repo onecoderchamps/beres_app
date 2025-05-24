@@ -6,6 +6,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AktifitasScreen from '../screens/AktifitasScreen';
 import AkunScreen from '../screens/AkunScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // import icon
+import PatunganScreen from '../screens/patungan/PatunganScreen';
+import ArisanScreen from '../screens/arisan/ArisanScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -13,6 +15,30 @@ const Stack = createNativeStackNavigator();
 const HomeStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Home" component={MainNavigator} />
+    <Stack.Screen 
+      name="Patungan" 
+      component={PatunganScreen} 
+      options={{
+      title: 'Patungan',
+      headerTitleAlign: 'center', // Mengatur posisi judul header ke tengah
+      headerShown: true,
+      headerStyle: {
+        backgroundColor: '#fff', // Mengatur warna latar belakang header
+      },
+      headerTintColor: '#000', // Mengatur warna teks header menjadi putih
+    }} />
+    <Stack.Screen 
+      name="Arisan" 
+      component={ArisanScreen} 
+      options={{
+      title: 'Arisan',
+      headerTitleAlign: 'center', // Mengatur posisi judul header ke tengah
+      headerShown: true,
+      headerStyle: {
+        backgroundColor: '#fff', // Mengatur warna latar belakang header
+      },
+      headerTintColor: '#000', // Mengatur warna teks header menjadi putih
+    }} />
   </Stack.Navigator>
 );
 

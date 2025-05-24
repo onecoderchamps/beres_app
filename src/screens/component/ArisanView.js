@@ -21,7 +21,7 @@ const formatHargaToK = (hargaString) => {
 
 const ArisanCard = ({ data = sampleArisan }) => {
   return (
-    <View style={[styles.card, { width: cardWidth }]}>
+    <View style={[styles.card]}>
       <View>
         <Image source={{ uri: data.image }} style={styles.image} />
 
@@ -45,7 +45,7 @@ const ArisanCard = ({ data = sampleArisan }) => {
             <Text style={styles.value}>{formatHargaToK(data.targetEmas)} Gr</Text>
           </View>
           <View style={styles.infoBox}>
-            <Text style={styles.label}>Iuran / Bulan</Text>
+            <Text style={styles.label}>Iuran</Text>
             <Text style={styles.value}>Rp {formatHargaToK(data.biayaBulanan)}</Text>
           </View>
         </View>
@@ -58,8 +58,6 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     backgroundColor: '#fff',
-    marginHorizontal: 5,
-    marginVertical: 10,
     overflow: 'hidden',
     borderColor:'#000',
     borderWidth:0.2,

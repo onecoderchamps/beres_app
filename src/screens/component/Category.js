@@ -6,7 +6,7 @@ const categories = [
   { key: 'Arisan', label: 'Arisan', icon: 'gold' },
   { key: 'Patungan', label: 'Patungan', icon: 'store' },
   { key: 'Koperasi', label: 'Koperasi', icon: 'home' },
-  { key: 'rumah_ibadah', label: 'Sedekah', icon: 'mosque' },
+  { key: 'Sedekah', label: 'Sedekah', icon: 'mosque' },
 ];
 
 const CategorySelector = ({ onSelect }) => {

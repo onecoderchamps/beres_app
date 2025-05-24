@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import PatunganCard from './component/PatunganCard';
 import ImageSlider from './component/ImageSlider';
-import MiniCard from './component/MiniCard';
+import MiniCard from './component/PatunganView';
 import PatunganSummary from './component/PatunganSummary';
 import CategorySelector from './component/Category';
 import MembershipCard from './component/MembershipCard';
@@ -36,7 +36,7 @@ const artikelData = [
     },
 ];
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
     const handleArtikelPress = (artikel) => {
         console.log('Artikel dipilih:', artikel.title);
     };
@@ -52,18 +52,30 @@ const HomeScreen = () => {
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
             <StatusBar backgroundColor="#214937" barStyle="light-content" />
             {/* 1. Banner */}
-            <ImageSlider images={data} style={styles.banner} />
+            <ImageSlider images={data}  style={styles.banner} />
 
             <MembershipCard />
 
             <Text style={styles.sectionTitle}>Telusuri Kategori</Text>
-            <CategorySelector onSelect={(cat) => console.log('Selected category:', cat)} />
+            <CategorySelector onSelect={(cat) => 
+                {
+                    if (cat === 'Arisan') {
+                        navigation.navigate('Arisan');
+                    } else if (cat === 'Patungan') {
+                        navigation.navigate('Patungan');
+                    } else if (cat === 'Koperasi') {
+                        navigation.navigate('Koperasi');
+                    } else if (cat === 'Sedekah') {
+                        navigation.navigate('Sedekah');
+                    }
+                }
+            } />
 
             {/* 3. Promo */}
             <Text style={styles.sectionTitle}>Promo Patungan</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
                 {[1, 2, 3].map((item) => (
-                    <TouchableOpacity>
+                    <TouchableOpacity style={{ marginHorizontal: 5, marginVertical:10 }} key={item}>
                         <MiniCard key={item} />
                     </TouchableOpacity>
                 ))}

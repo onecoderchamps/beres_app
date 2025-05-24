@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { width } = Dimensions.get('window');
-const cardWidth = (width - 30) / 2;
+const cardWidth = (width - 60) / 2;
 
 const sampleData = {
   image: 'https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc',
@@ -40,11 +40,11 @@ const formatHargaToK = (hargaString) => {
   return number >= 1000 ? `${(number / 1000).toLocaleString('id-ID')} K` : number.toLocaleString('id-ID');
 };
 
-const MiniCard = ({ data = sampleData }) => {
+const PatunganComponent = ({ data = sampleData }) => {
   const iconInfo = iconMap[data.type] || iconMap['aset'];
 
   return (
-    <View style={[styles.card, { width: cardWidth }]}>
+    <View style={[styles.card]}>
       <View>
         <Image source={{ uri: data.image }} style={styles.image} />
 
@@ -86,8 +86,6 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     backgroundColor: '#fff',
-    marginHorizontal: 5,
-    marginVertical: 10,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -161,4 +159,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MiniCard;
+export default PatunganComponent;
