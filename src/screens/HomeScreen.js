@@ -41,7 +41,7 @@ const HomeScreen = ({ navigation }) => {
             {/* 1. Banner */}
             <ImageSlider images={data} style={styles.banner} />
 
-            <MembershipCard />
+            <MembershipCard navigation={navigation}/>
 
             <Text style={styles.sectionTitle}>Telusuri Kategori</Text>
             <CategorySelector onSelect={handleCategorySelect} />

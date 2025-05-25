@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const MembershipCard = () => {
+const MembershipCard = ({navigation}) => {
   return (
     <View style={styles.membershipContainer}>
       {/* Bagian Saldo */}
@@ -12,7 +12,7 @@ const MembershipCard = () => {
           <Text style={styles.membershipValue}>Rp. 0</Text>
         </View>
         <View style={styles.membershipBox2}>
-          <TouchableOpacity style={{ alignItems: 'center' }}>
+          <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => navigation.navigate('Saldo')}>
             <Icon name="plus-circle-outline" size={24} color="#000" />
             <Text style={styles.membershipValue2}>TopUp</Text>
           </TouchableOpacity>

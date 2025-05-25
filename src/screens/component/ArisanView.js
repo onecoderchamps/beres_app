@@ -68,12 +68,6 @@ const ArisanComponent = ({ data }) => {
 
       <View style={styles.content}>
         <Text style={styles.nama} numberOfLines={1}>{data.nama}</Text>
-        {/* <Text style={styles.alamat} numberOfLines={2}>{data.alamat}</Text> */}
-
-        <View style={styles.progressBarContainer}>
-          <View style={[styles.progressBar, { width: data.percentage }]} />
-        </View>
-
         <View style={styles.row}>
           <View style={styles.infoBox}>
             <Text style={styles.label}>Emas</Text>

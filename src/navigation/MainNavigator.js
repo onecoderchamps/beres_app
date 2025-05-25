@@ -12,6 +12,7 @@ import ArisanDetailScreen from '../screens/arisan/ArisanDetailScreen';
 import PatunganDetailScreen from '../screens/patungan/PatunganDetailScreen';
 import SedekahScreen from '../screens/sedekah/SedekahScreen';
 import KoperasiScreen from '../screens/koperasi/KoperasiScreen';
+import SaldoScreen from '../screens/saldo/SaldoScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -84,6 +85,18 @@ const HomeStack = () => (
       component={KoperasiScreen} 
       options={{
       title: 'Koperasi',
+      headerTitleAlign: 'center', // Mengatur posisi judul header ke tengah
+      headerShown: true,
+      headerStyle: {
+        backgroundColor: '#fff', // Mengatur warna latar belakang header
+      },
+      headerTintColor: '#000', // Mengatur warna teks header menjadi putih
+    }} />
+    <Stack.Screen 
+      name="Saldo" 
+      component={SaldoScreen} 
+      options={{
+      title: 'Saldo',
       headerTitleAlign: 'center', // Mengatur posisi judul header ke tengah
       headerShown: true,
       headerStyle: {
