@@ -30,7 +30,7 @@ const contentData = {
     Syarat: 'Syarat dan ketentuan berlaku pada program ini.',
 };
 
-export default function PatunganDetail() {
+export default function PatunganDetail({navigation}) {
     const [activeTab, setActiveTab] = useState('Deskripsi');
     const [modalVisible, setModalVisible] = useState(false);
     const [jumlahLot, setJumlahLot] = useState(1);
@@ -62,7 +62,7 @@ export default function PatunganDetail() {
                     {
                         text: 'Topup Sekarang',
                         onPress: () => {
-                            Alert.alert('Topup', 'Navigasi ke halaman topup saldo.');
+                            navigation.navigate('Saldo')
                         },
                     },
                 ],
@@ -156,7 +156,7 @@ export default function PatunganDetail() {
                 activeOpacity={0.8}
                 onPress={() => setModalVisible(true)}
             >
-                <Text style={styles.floatingButtonText}>Gabung Member</Text>
+                <Text style={styles.floatingButtonText}>Beli Aset</Text>
             </TouchableOpacity>
 
             {/* Modal */}
@@ -168,12 +168,12 @@ export default function PatunganDetail() {
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Gabung Member</Text>
+                        <Text style={styles.modalTitle}>Informasi Pembelian</Text>
 
-                        <Text style={styles.label}>Total Saldo:</Text>
+                        <Text style={styles.label}>Saldo Anda:</Text>
                         <Text style={styles.value}>Rp {totalSaldo.toLocaleString()}</Text>
 
-                        <Text style={styles.label}>Harga Wajib per Lot:</Text>
+                        <Text style={styles.label}>Harga / Lot:</Text>
                         <Text style={styles.value}>Rp {iuranWajibPerLot.toLocaleString()}</Text>
 
                         <Text style={styles.label}>Jumlah Lot:</Text>
