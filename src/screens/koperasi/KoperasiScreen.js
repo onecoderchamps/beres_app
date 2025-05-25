@@ -103,7 +103,7 @@ const KoperasiScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.backgroundStyle}>
-            <StatusBar backgroundColor="#3f2e3e" barStyle="light-content" />
+            <StatusBar backgroundColor="#3f2e3e" barStyle="dark-content" />
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 {loading ? (
                     <ActivityIndicator size="large" color="#3f2e3e" />
