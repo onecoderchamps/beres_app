@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { getData, postData } from '../../../api/service';
 
 const Member = ({ data }) => {
     const bulanSekarang = new Date().toLocaleString('id-ID', { month: 'long' });
-    const [datas, setdatas] = useState(false);
+    const [datas, setdatas] = useState("");
 
     const getDatabase = async () => {
         try {
             const response = await getData('auth/verifySessions');
+            console.log(response);
             setdatas(response.data);
         } catch (error) {
             Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
@@ -26,9 +27,10 @@ const Member = ({ data }) => {
         };
         try {
             const response = await postData('Arisan/PayArisan',formData);
-            Alert.alert("Berhasil", response.data.message);
+            Alert.alert("Berhasil", response.message);
         } catch (error) {
-            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+            console.log(error)
+            Alert.alert("Error", error.data.errorMessage.Error || "Terjadi kesalahan saat memverifikasi.");
         }
     };
     
@@ -55,16 +57,22 @@ const Member = ({ data }) => {
                         <Text style={[styles.cell, styles.slot]}>{item.jumlahLot}</Text>
 
                         {!item.isMonthPayed ? (
-                            <TouchableOpacity onPress={() => handleBayar(item)} style={[styles.cell, styles.terima, { backgroundColor: 'green', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 4 }]}>
+                            datas?.role === '2' ? (
+                            <TouchableOpacity onPress={() => handleBayar(item)} style={[{ backgroundColor: 'green', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 4,textAlign:'center' }]}>
                                 <Text style={{ color: 'white', fontWeight: 'bold' }}>Bayar</Text>
                             </TouchableOpacity>
+                            ) : <Icon name="close" size={16} color="red" style={[styles.cell, styles.terima]} />
                         ) : (
                             <Icon name="check" size={16} color="green" style={[styles.cell, styles.terima]} />
                         )}
                         {item.isPayed ? (
                             <Icon name="check" size={16} color="green" style={[styles.cell, styles.terima]} />
                         ) : (
-                            <Icon name="close" size={16} color="red" style={[styles.cell, styles.terima]} />
+                            datas?.role === '2' ? (
+                                <TouchableOpacity onPress={() => handleBayar(item)} style={[{ backgroundColor: 'green', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 4, textAlign: 'center' }]}>
+                                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Approve</Text>
+                                </TouchableOpacity>
+                            ) : <Icon name="close" size={16} color="red" style={[styles.cell, styles.terima]} />
                         )}
                     </View>
                 ))}

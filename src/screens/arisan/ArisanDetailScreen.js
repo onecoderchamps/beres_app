@@ -17,6 +17,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Deskripsi from './component/Deskripsi';
 import Member from './component/Member';
 import Syarat from './component/Syarat';
+import { getData } from '../../api/service';
 
 const { width, height } = Dimensions.get('window');
 
@@ -34,13 +35,24 @@ const contentData = {
     Syarat: 'Syarat dan ketentuan berlaku pada program ini.',
 };
 
-export default function ArisanDetail({route}) {
+export default function ArisanDetail({ route }) {
     const { data } = route.params
     const [activeTab, setActiveTab] = useState('Deskripsi');
     const [modalVisible, setModalVisible] = useState(false);
     const [jumlahLot, setJumlahLot] = useState(1);
     const [nominal, setNominal] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [datas, setdatas] = useState("");
+
+    const getDatabase = async () => {
+        try {
+            const response = await getData('auth/verifySessions');
+            setdatas(response.data);
+            setModalVisible(true)
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+        }
+    };
 
     const totalSaldo = 500000;
     const iuranWajibPerLot = 100000;
@@ -102,7 +114,7 @@ export default function ArisanDetail({route}) {
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
             >
-                {data.banner.map((banner,idx) => (
+                {data.banner.map((banner, idx) => (
                     <Image key={idx} source={{ uri: banner }} style={styles.banner} />
                 ))}
             </ScrollView>
@@ -147,13 +159,13 @@ export default function ArisanDetail({route}) {
             <View style={styles.contentContainer}>
                 <ScrollView>
                     {activeTab === 'Deskripsi' &&
-                        <Deskripsi data={data}/>
+                        <Deskripsi data={data} />
                     }
                     {activeTab === 'Member' &&
-                        <Member data={data}/>
+                        <Member data={data} />
                     }
                     {activeTab === 'Syarat' &&
-                        <Syarat data={data}/>
+                        <Syarat data={data} />
                     }
                 </ScrollView>
             </View>
@@ -162,7 +174,7 @@ export default function ArisanDetail({route}) {
             <TouchableOpacity
                 style={styles.floatingButton}
                 activeOpacity={0.8}
-                onPress={() => setModalVisible(true)}
+                onPress={() => getDatabase()}
             >
                 <Text style={styles.floatingButtonText}>Gabung Member</Text>
             </TouchableOpacity>
@@ -179,7 +191,7 @@ export default function ArisanDetail({route}) {
                         <Text style={styles.modalTitle}>Gabung Member</Text>
 
                         <Text style={styles.label}>Total Saldo:</Text>
-                        <Text style={styles.value}>Rp {totalSaldo.toLocaleString()}</Text>
+                        <Text style={styles.value}>Rp {datas.balance.toLocaleString()}</Text>
 
                         <Text style={styles.label}>Harga Wajib per Lot:</Text>
                         <Text style={styles.value}>Rp {iuranWajibPerLot.toLocaleString()}</Text>
@@ -255,7 +267,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: 10,
         position: 'absolute',
-        top: height/4.2,
+        top: height / 4.2,
         left: 10,
         zIndex: 1,
         backgroundColor: 'transparent',
