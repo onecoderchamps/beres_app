@@ -61,7 +61,7 @@ const AktifitasScreen = () => {
     <SafeAreaView style={styles.backgroundStyle}>
       <StatusBar backgroundColor="#214937" barStyle="dark-content" />
       <ScrollView contentContainerStyle={{ padding: 20,marginVertical: 20 }}>
-        <Text style={styles.header}>Aktivitas Aset Patungan</Text>
+        <Text style={styles.header}>Aktivitas Aset</Text>
 
         {loading ? (
           <ActivityIndicator size="large" color="#214937" style={{ marginTop: 30 }} />

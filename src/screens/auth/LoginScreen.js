@@ -7,14 +7,11 @@ import {
   StatusBar
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import { postData } from '../../api/service';
 
 const LoginScreen = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const generateOtp = () => {
-    return Math.floor(1000 + Math.random() * 9000).toString();
-  };
 
   const formatPhoneNumber = (number) => {
     const cleaned = number.replace(/[^0-9]/g, '');
@@ -26,15 +23,6 @@ const LoginScreen = ({ navigation }) => {
     return '+62' + cleaned;
   };
 
-  const checkPhoneInFirebase = async (formattedPhone) => {
-    const snapshot = await firestore()
-      .collection('users')
-      .where('phone', '==', formattedPhone)
-      .limit(1)
-      .get();
-    return !snapshot.empty;
-  };
-
   const sendOtp = async () => {
     if (!phoneNumber.trim()) {
       Alert.alert("Error", "Nomor ponsel tidak boleh kosong.");
@@ -43,61 +31,20 @@ const LoginScreen = ({ navigation }) => {
 
     const formattedPhone = formatPhoneNumber(phoneNumber);
 
+    const formData = {
+      phonenumber: formattedPhone
+    };
+
     setLoading(true);
     try {
-      const exists = await checkPhoneInFirebase(formattedPhone);
-      if (!exists) {
-        navigation.navigate('Register', { phoneNumber: formattedPhone });
-        setLoading(false);
-        return;
-      }
-
-      const otp = generateOtp();
-
-      const response = await fetch('https://app.saungwa.com/api/create-message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: formattedPhone,
-          authkey: "Z8hxOuMsQapmnfe3GFkNbmgWMuOLLcVxnU1oO6fufLFKy0bpS4",
-          appkey: "f21f3e8b-820c-4598-895a-ae034cbb53d6",
-          message: `Kode OTP Anda adalah ${otp}`
-        }),
-      });
-
-      const data = await response.text();
-
-      if (response.ok) {
-        const otpRef = firestore().collection('otp');
-        const existing = await otpRef.where('phone', '==', formattedPhone).limit(1).get();
-
-        if (!existing.empty) {
-          // Jika sudah ada, update OTP-nya
-          const docId = existing.docs[0].id;
-          await otpRef.doc(docId).update({
-            otp: otp,
-            createdAt: firestore.FieldValue.serverTimestamp()
-          });
-        } else {
-          // Jika belum ada, buat baru
-          const otpRefs = firestore().collection('users');
-          const existings = await otpRefs.where('phone', '==', formattedPhone).limit(1).get();
-          const docId = existings.docs[0].id;
-          await otpRef.add({
-            uid: docId,
-            phone: formattedPhone,
-            otp: otp,
-            createdAt: firestore.FieldValue.serverTimestamp()
-          });
-        }
-        navigation.navigate('Otp', { phoneNumber: formattedPhone, otp });
-      } else {
-        Alert.alert('Gagal', data || 'Terjadi kesalahan saat mengirim OTP.');
-      }
+      await postData('otp/sendWA', formData);
+      navigation.navigate("Otp", {
+        phonenumber: formattedPhone
+      })
+      setLoading(false)
     } catch (error) {
-      Alert.alert('Error', 'Gagal memeriksa data atau mengirim OTP.');
-    } finally {
-      setLoading(false);
+      console.error(error);
+      setLoading(false)
     }
   };
 
@@ -129,7 +76,7 @@ const LoginScreen = ({ navigation }) => {
               disabled={loading}
             >
               <Text style={styles.buttonText}>
-                {loading ? 'Mengirim...' : 'Konfirmasi'}
+                {loading ? 'Mengirim...' : 'Masuk'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -142,7 +89,7 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#214937",
+    backgroundColor: "#fff",
     justifyContent: 'space-between',
   },
   logoContainer: {

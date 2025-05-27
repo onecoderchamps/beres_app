@@ -11,8 +11,12 @@ import {
     Modal,
     TextInput,
     Alert,
+    Image,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Deskripsi from './component/Deskripsi';
+import Member from './component/Member';
+import Syarat from './component/Syarat';
 
 const { width, height } = Dimensions.get('window');
 
@@ -30,7 +34,8 @@ const contentData = {
     Syarat: 'Syarat dan ketentuan berlaku pada program ini.',
 };
 
-export default function ArisanDetail() {
+export default function ArisanDetail({route}) {
+    const { data } = route.params
     const [activeTab, setActiveTab] = useState('Deskripsi');
     const [modalVisible, setModalVisible] = useState(false);
     const [jumlahLot, setJumlahLot] = useState(1);
@@ -97,19 +102,14 @@ export default function ArisanDetail() {
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
             >
-                {banners.map((banner) => (
-                    <View
-                        key={banner.id}
-                        style={[styles.banner, { backgroundColor: banner.color }]}
-                    >
-                        <Text style={styles.bannerText}>{banner.text}</Text>
-                    </View>
+                {data.banner.map((banner,idx) => (
+                    <Image key={idx} source={{ uri: banner }} style={styles.banner} />
                 ))}
             </ScrollView>
 
             {/* Dots Indicator */}
             <View style={styles.dotsContainer}>
-                {banners.map((_, index) => (
+                {data.banner.map((_, index) => (
                     <View
                         key={index}
                         style={[
@@ -146,7 +146,15 @@ export default function ArisanDetail() {
             {/* Tab Content */}
             <View style={styles.contentContainer}>
                 <ScrollView>
-                    <Text style={styles.contentText}>{contentData[activeTab]}</Text>
+                    {activeTab === 'Deskripsi' &&
+                        <Deskripsi data={data}/>
+                    }
+                    {activeTab === 'Member' &&
+                        <Member data={data}/>
+                    }
+                    {activeTab === 'Syarat' &&
+                        <Syarat data={data}/>
+                    }
                 </ScrollView>
             </View>
 
@@ -234,8 +242,7 @@ const styles = StyleSheet.create({
     bannerContainer: { height: 150 },
     banner: {
         width: width,
-        justifyContent: 'center',
-        alignItems: 'center',
+        resizeMode: 'cover',
     },
     bannerText: {
         color: '#fff',

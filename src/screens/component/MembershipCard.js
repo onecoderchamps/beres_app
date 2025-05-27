@@ -1,15 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getData } from '../../api/service';
 
-const MembershipCard = ({navigation}) => {
+const MembershipCard = ({ navigation }) => {
+
+  const [loading, setLoading] = useState(false);
+  const [data, setdata] = useState(false);
+
+  const getDatabase = async () => {
+    setLoading(true);
+    try {
+      const response = await getData('auth/verifySessions');
+      setdata(response.data);
+      setLoading(false)
+    } catch (error) {
+      Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi OTP.");
+      setLoading(false)
+    }
+  };
+
+  useEffect(() => {
+    getDatabase()
+  }, []);
+
+  const formatCurrency = (numberString) => {
+    if (!numberString) return 0;
+    return parseInt(numberString).toLocaleString('id-ID');
+  };
+
   return (
     <View style={styles.membershipContainer}>
       {/* Bagian Saldo */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={styles.membershipBox}>
           <Text style={styles.membershipLabel}>Saldo</Text>
-          <Text style={styles.membershipValue}>Rp. 0</Text>
+          <Text style={styles.membershipValue}>Rp {formatCurrency(data.balance)}</Text>
         </View>
         <View style={styles.membershipBox2}>
           <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => navigation.navigate('Saldo')}>

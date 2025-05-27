@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Dimensions,
     SafeAreaView,
@@ -15,15 +15,40 @@ import {
     Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getData } from '../api/service';
 
 const { width } = Dimensions.get('window');
 
 const AkunScreen = () => {
     const [modalVisible, setModalVisible] = useState(false);
 
+    const [loading, setLoading] = useState(false);
+    const [data, setdata] = useState(false);
+
+    const getDatabase = async () => {
+        setLoading(true);
+        try {
+            const response = await getData('auth/verifySessions');
+            setdata(response.data);
+            setLoading(false)
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi OTP.");
+            setLoading(false)
+        }
+    };
+
+    useEffect(() => {
+        getDatabase()
+    }, []);
+
+    const formatCurrency = (numberString) => {
+        if (!numberString) return 0;
+        return parseInt(numberString).toLocaleString('id-ID');
+    };
+
     const signOut = async () => {
         try {
-            await AsyncStorage.removeItem('uid');
+            await AsyncStorage.removeItem('accessTokens');
             Alert.alert('Logged Out', 'You have been logged out.');
         } catch (error) {
             Alert.alert('Error', error.message);
@@ -60,10 +85,10 @@ const AkunScreen = () => {
 
                 {/* PROFIL */}
                 <View style={styles.profileContainer}>
-                    <Image source={{ uri: profile.photo }} style={styles.profilePhoto} />
+                    <Image source={{ uri: data.image }} style={styles.profilePhoto} />
                     <View style={styles.profileInfo}>
-                        <Text style={styles.profileName}>{profile.name}</Text>
-                        <Text style={styles.profilePhone}>{profile.phone}</Text>
+                        <Text style={styles.profileName}>{data.fullName === "" ? "User Beres" : data.fullName}</Text>
+                        <Text style={styles.profilePhone}>{data.phone}</Text>
                     </View>
                     <TouchableOpacity onPress={() => setModalVisible(true)}>
                         <Icon name="pencil-outline" size={24} color="#214937" />

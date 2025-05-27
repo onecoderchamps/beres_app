@@ -14,10 +14,11 @@ import {
 } from 'react-native';
 import PatunganComponent from '../component/PatunganView';
 import PatunganData from '../../dummy/patungan.json'
+import FloatingButton from '../arisan/Floating';
 
 const { width } = Dimensions.get('window');
 
-const PatunganScreen = ({navigation}) => {
+const PatunganScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -36,13 +37,14 @@ const PatunganScreen = ({navigation}) => {
                 ) : (
                     <View style={styles.cardContainer}>
                         {PatunganData.map((item) => (
-                            <TouchableOpacity onPress={()=> navigation.navigate("PatunganDetail")} key={item} style={styles.card}>
-                                <PatunganComponent key={item} data={item}/>
+                            <TouchableOpacity onPress={() => navigation.navigate("PatunganDetail")} key={item} style={styles.card}>
+                                <PatunganComponent key={item} data={item} />
                             </TouchableOpacity>
                         ))}
                     </View>
                 )}
             </ScrollView>
+            <FloatingButton onPress={() => console.log('hil')} />
         </SafeAreaView>
     );
 };

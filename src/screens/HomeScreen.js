@@ -1,24 +1,102 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View, Text, Image, StyleSheet, ScrollView,
     TouchableOpacity,
     StatusBar,
-    Dimensions
+    Dimensions,
+    PermissionsAndroid
 } from 'react-native';
 import ImageSlider from './component/ImageSlider';
 import PatunganCard from './component/PatunganView';
 import CategorySelector from './component/Category';
 import MembershipCard from './component/MembershipCard';
 import ArisanCard from './component/ArisanView';
+import messaging from '@react-native-firebase/messaging';
+import { request, PERMISSIONS } from 'react-native-permissions';
 
 import artikelData from './../dummy/artikel.json'; // Pastikan path ini sesuai dengan struktur proyek Anda
 import data from './../dummy/banner.json'; // Pastikan path ini sesuai dengan struktur proyek Anda
 import patunganData from './../dummy/patungan.json';
-import arisanData from './../dummy/arisan.json'; // Pastikan path ini sesuai dengan struktur proyek Anda
+import { getData, postData } from '../api/service';
 
 const { width } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
+
+    const [arisanData, setArisanData] = useState([]);
+
+    useEffect(() => {
+        getDatabaseArisan();
+    }, []);
+
+    const getDatabaseArisan = async () => {
+        try {
+            const res = await getData('Arisan');
+            setArisanData(res.data);
+        } catch (error) {
+            console.error("Gagal fetch Arisan:", error);
+        }
+    };
+
+    const requestPermissions = async () => {
+        try {
+            if (Platform.OS === 'android') {
+                // Request permission for Geolocation
+                const locationGranted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+                );
+
+                // Request permission for Camera
+                const cameraGranted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.CAMERA
+                );
+
+                // Request permission for Notifications (Android 13+)
+                const notificationGranted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+                );
+
+                if (
+                    locationGranted === PermissionsAndroid.RESULTS.GRANTED &&
+                    cameraGranted === PermissionsAndroid.RESULTS.GRANTED &&
+                    notificationGranted === PermissionsAndroid.RESULTS.GRANTED
+                ) {
+                    return true;
+                } else {
+                    Alert.alert(
+                        'Permission Denied',
+                        'You need to grant permissions for location, camera, and notifications.'
+                    );
+                    return false;
+                }
+            } else if (Platform.OS === 'ios') {
+                // iOS: Request permissions using `react-native-permissions`
+                const locationPermission = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+                const cameraPermission = await request(PERMISSIONS.IOS.CAMERA);
+                const notificationPermission = await request(PERMISSIONS.IOS.NOTIFICATIONS);
+
+                // Check if all permissions are granted
+                if (
+                    locationPermission === 'granted' &&
+                    cameraPermission === 'granted' &&
+                    notificationPermission === 'granted'
+                ) {
+                    return true;
+                } else {
+                    Alert.alert(
+                        'Permission Denied',
+                        'You need to grant permissions for location, camera, and notifications.'
+                    );
+                    return false;
+                }
+            }
+            return false; // default for unsupported platforms
+        } catch (error) {
+            console.error('Permission request failed', error);
+            return false;
+        }
+    };
+
     const handleArtikelPress = (artikel) => {
         console.log('Artikel dipilih:', artikel.title);
     };
@@ -35,13 +113,26 @@ const HomeScreen = ({ navigation }) => {
         }
     }
 
+    const getFCM = async () => {
+        const fcmToken = await messaging().getToken();
+        const form = {
+            fcm: fcmToken,
+        };
+        await postData('auth/updateFCMUser', form);
+    }
+
+    useEffect(() => {
+        getFCM()
+        requestPermissions();
+    }, []);
+
     return (
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
             <StatusBar backgroundColor="#214937" barStyle="light-content" />
             {/* 1. Banner */}
             <ImageSlider images={data} style={styles.banner} />
 
-            <MembershipCard navigation={navigation}/>
+            <MembershipCard navigation={navigation} />
 
             <Text style={styles.sectionTitle}>Telusuri Kategori</Text>
             <CategorySelector onSelect={handleCategorySelect} />
@@ -51,8 +142,8 @@ const HomeScreen = ({ navigation }) => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
                 {patunganData.map((item) =>
                     item.isPromo ? (
-                        <TouchableOpacity onPress={() => navigation.navigate("PatunganDetail")} style={{ marginHorizontal: 5, marginVertical: 10, width: width/1.8 }} key={item.id || item}>
-                            <PatunganCard data={item}/> 
+                        <TouchableOpacity onPress={() => navigation.navigate("PatunganDetail")} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 1.8 }} key={item.id || item}>
+                            <PatunganCard data={item} />
                         </TouchableOpacity>
                     ) : null
                 )}
@@ -61,11 +152,11 @@ const HomeScreen = ({ navigation }) => {
             {/* 4. Arisan Terkini */}
             <Text style={styles.sectionTitle}>Arisan Terkini</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
-                {arisanData.map((item) => 
-                    item.isPromo ? (
-                    <TouchableOpacity onPress={() => navigation.navigate("ArisanDetail")} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 2 }} key={item}>
-                        <ArisanCard data={item} />
-                    </TouchableOpacity>
+                {arisanData.map((item) =>
+                    !item.isPromo ? (
+                        <TouchableOpacity onPress={() => navigation.navigate("ArisanDetail",{data: item})} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 2 }} key={item}>
+                            <ArisanCard data={item} />
+                        </TouchableOpacity>
                     ) : null
                 )}
             </ScrollView>

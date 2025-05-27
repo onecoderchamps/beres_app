@@ -1,52 +1,83 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { postData } from '../../api/service';
 
-const OtpVerificationScreen = ({ route, navigation }) => {
-  const { phoneNumber } = route.params;
-  const [otpInput, setOtpInput] = useState('');
+const OtpVerificationScreen = ({ route }) => {
+  const { phonenumber } = route.params
   const [loading, setLoading] = useState(false);
 
+  const intervalRef = useRef(null);
+  const [error, setError] = useState('');
+  const [timer, setTimer] = useState(60);
+  const [modalWarning, setmodalWarning] = useState(false)
+  const [warning, setwarning] = useState('')
+
+  const [form, setForm] = useState({
+    otp: '',
+  })
+
+  const handleInputChange = (name, value) => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value
+    }));
+  };
+
+  useEffect(() => {
+    if (timer > 0) {
+      intervalRef.current = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else {
+      clearInterval(intervalRef.current);
+    }
+
+    return () => {
+      clearInterval(intervalRef.current);
+      AsyncStorage.setItem('verificationTimer', timer.toString());
+    };
+  }, [timer]);
+
   const verifyOtp = async () => {
-    if (!otpInput.trim()) {
+    if (!form.otp.trim()) {
       Alert.alert("Error", "OTP tidak boleh kosong.");
       return;
     }
 
     setLoading(true);
+    const formData = {
+      phonenumber: phonenumber,
+      code: form.otp
+    };
     try {
-      const snapshot = await firestore()
-        .collection('otp')
-        .where('phone', '==', phoneNumber)
-        .where('otp', '==', otpInput)
-        .limit(1)
-        .get();
-
-      if (!snapshot.empty) {
-        const otpDoc = snapshot.docs[0];
-        const createdAt = otpDoc.data().createdAt.toDate(); // Waktu OTP dibuat
-        const currentTime = new Date();
-
-        // Cek apakah OTP sudah lebih dari 5 menit
-        const timeDifference = (currentTime - createdAt) / 1000 / 60; // dalam menit
-
-        if (timeDifference > 5) {
-          Alert.alert("Gagal", "OTP telah kedaluwarsa.");
-          // await firestore().collection('otp').doc(otpDoc.id).delete(); // Hapus OTP yang kedaluwarsa
-        } else {
-          // OTP valid, hapus OTP dan navigasi ke halaman berikutnya
-          await firestore().collection('otp').doc(otpDoc.id).delete();
-          await AsyncStorage.setItem('uid', otpDoc.data().uid);
-        }
-      } else {
-        Alert.alert("Gagal", "OTP tidak valid.");
-      }
+      const response = await postData('otp/validateWA', formData);
+      await AsyncStorage.setItem('accessTokens', response.message.accessToken);
+      setLoading(false)
     } catch (error) {
-      Alert.alert("Error", "Terjadi kesalahan saat memverifikasi OTP.");
-    } finally {
-      setLoading(false);
+      Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi OTP.");
+      setLoading(false)
     }
+  };
+
+  const handleResendPress = async () => {
+    const formData = {
+      phonenumber: phonenumber
+    };
+    try {
+      await postData('otp/sendWA', formData);
+      setTimer(60);
+      await AsyncStorage.setItem('verificationTimer', '60');
+    } catch (error) {
+      setmodalWarning(true)
+      setwarning(error.message)
+    }
+  };
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
   return (
@@ -57,10 +88,20 @@ const OtpVerificationScreen = ({ route, navigation }) => {
         style={styles.input}
         placeholder="Masukkan OTP"
         keyboardType="numeric"
-        value={otpInput}
-        onChangeText={setOtpInput}
+        value={form.otp}
+        onChangeText={(value) => handleInputChange('otp', value)}
         editable={!loading}
       />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between',marginBottom: 30 }}>
+          <Text style={[{ fontWeight: 'bold' }]}>{timer === 0 ? "" : formatTime(timer)}</Text>
+          <TouchableOpacity
+            onPress={handleResendPress}
+            disabled={timer > 0}
+            style={{ opacity: timer > 0 ? 0.5 : 1 }}
+          >
+            <Text style={[{ fontWeight: 'bold' }]}>Kirim Ulang</Text>
+          </TouchableOpacity>
+        </View>
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonLoading]}
         onPress={verifyOtp}
@@ -94,7 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
     width: '100%',
-    elevation:1
+    elevation: 1
   },
   button: {
     backgroundColor: '#F3C623',  // Same background as the header color
@@ -102,7 +143,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation:1
+    elevation: 1
   },
   buttonLoading: {
     backgroundColor: '#777',  // Darken the color when loading
