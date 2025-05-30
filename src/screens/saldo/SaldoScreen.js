@@ -24,39 +24,34 @@ const SaldoScreen = () => {
     const [datas, setdatas] = useState("");
     const [rekening, setrekening] = useState("");
 
-    
-        const getDatabase = async () => {
-            try {
-                const response = await getData('auth/verifySessions');
-                const rekening = await getData('rekening');
-                setdatas(response.data);
-                setrekening(rekening.data);
-                console.log('Rekening:', rekening.data);
-                setLoading(false);
-            } catch (error) {
-                Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
-            }
-        };
+
+    const getDatabase = async () => {
+        try {
+            const response = await getData('auth/verifySessions');
+            const rekening = await getData('rekening');
+            const transaksi = await getData('transaksi');
+
+            setdatas(response.data);
+            setrekening(rekening.data);
+            setHistory(transaksi.data);
+            setLoading(false);
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+        }
+    };
 
     useEffect(() => {
         getDatabase();
-        setTimeout(() => {
-            setHistory([
-                { id: '1', title: 'Top Up Bulan Mei', date: '20 Mei 2025', amount: 250000, type: 'in' },
-                { id: '2', title: 'Iuran Arisan', date: '15 Mei 2025', amount: 150000, type: 'out' },
-                { id: '3', title: 'Top Up Bulan April', date: '1 Mei 2025', amount: 300000, type: 'in' },
-            ]);
-        }, 500);
     }, []);
 
     const renderHistoryItem = ({ item }) => (
         <View style={styles.historyItem}>
             <View>
-                <Text style={styles.historyTitle}>{item.title}</Text>
-                <Text style={styles.historyDate}>{item.date}</Text>
+                <Text style={styles.historyTitle}>{item.ket}</Text>
+                <Text style={styles.historyDate}>{item.createdAt}</Text>
             </View>
-            <Text style={[styles.historyAmount, item.type === 'in' ? styles.income : styles.expense]}>
-                {item.type === 'in' ? '+' : '-'}Rp {item.amount.toLocaleString('id-ID')}
+            <Text style={[styles.historyAmount, item.status === 'Income' ? styles.income : styles.expense]}>
+                {item.status === 'Income' ? '+ ' : '- '}Rp {item.nominal.toLocaleString('id-ID')}
             </Text>
         </View>
     );
@@ -66,6 +61,15 @@ const SaldoScreen = () => {
         const message = 'Halo, saya ingin mengirim bukti topup';
         Linking.openURL(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`);
     };
+
+    if(loading) {
+        return (
+            <SafeAreaView style={styles.backgroundStyle}>
+                <StatusBar backgroundColor="#214937" barStyle="dark-content" />
+                <ActivityIndicator size="large" color="#214937" style={{ flex: 1, justifyContent: 'center' }} />
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={styles.backgroundStyle}>

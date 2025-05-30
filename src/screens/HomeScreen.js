@@ -26,11 +26,22 @@ const HomeScreen = ({ navigation }) => {
     const [arisanData, setArisanData] = useState([]);
     const [patunganData, setPatunganData] = useState([]);
     const [data, setdata] = useState([]);
+    const [dataProfile, setdataProfile] = useState("");
+
+    const getDatabaseUser = async () => {
+        setLoading(true);
+        try {
+            const response = await getData('auth/verifySessions');
+            setdataProfile(response.data);
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi OTP.");
+            setLoading(false)
+        }
+    };
 
     const getDatabase = async () => {
         try {
             const response = await getData('rekening/Banner');
-            console.log("Banner Data:", response.data);
             setdata(response.data);
         } catch (error) {
             Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi OTP.");
@@ -39,6 +50,7 @@ const HomeScreen = ({ navigation }) => {
     };
 
     useEffect(() => {
+        getDatabaseUser();
         getDatabase();
         getDatabaseArisan();
         getDatabasePatungan();
@@ -132,7 +144,9 @@ const HomeScreen = ({ navigation }) => {
         } else if (cat === 'Patungan') {
             navigation.navigate('Patungan');
         } else if (cat === 'Koperasi') {
-            navigation.navigate('Koperasi');
+            if(!dataProfile.isMember) {
+                navigation.navigate('Register');
+            }
         } else if (cat === 'Sedekah') {
             navigation.navigate('Sedekah');
         }
@@ -160,7 +174,7 @@ const HomeScreen = ({ navigation }) => {
             <MembershipCard navigation={navigation} />
 
             <Text style={styles.sectionTitle}>Telusuri Kategori</Text>
-            <CategorySelector onSelect={handleCategorySelect} />
+            <CategorySelector onSelect={handleCategorySelect} dataProfile={dataProfile} navigation={navigation}/>
 
             {/* 3. Promo */}
             <Text style={styles.sectionTitle}>Promo Patungan</Text>

@@ -27,18 +27,7 @@ export default function App() {
           headerTintColor: '#000', // Mengatur warna teks header menjadi putih
         }}
       />
-      <Stack.Screen
-        name="Register"
-        component={RegisterScreen}
-        options={{
-          title: 'Register',
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: '#fff', // Mengatur warna latar belakang header
-          },
-          headerTintColor: '#000', // Mengatur warna teks header menjadi putih
-        }}
-      />
+     
     </Stack.Navigator>
   );
 }

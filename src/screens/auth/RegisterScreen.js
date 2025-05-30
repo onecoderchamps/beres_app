@@ -7,14 +7,17 @@ import {
   StatusBar
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import { postData, putData } from '../../api/service';
 
 const RegisterScreen = ({ navigation }) => {
   const [fullname, setFullname] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [noNIK, setNoNIK] = useState('');
+  const [address, setAddress] = useState('');
+
   const [loading, setLoading] = useState(false);
 
-  const generateOtp = () => Math.floor(1000 + Math.random() * 9000).toString();
 
   const formatPhoneNumber = (number) => {
     const cleaned = number.replace(/[^0-9]/g, '');
@@ -36,60 +39,21 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const handleRegister = async () => {
-    if (!fullname || !phone || !email) {
+    if (!fullname || !address || !email || !noNIK) {
       Alert.alert('Error', 'Semua field wajib diisi.');
       return;
     }
-
-    const formattedPhone = formatPhoneNumber(phone);
     setLoading(true);
 
     try {
-      const exists = await checkPhoneExists(formattedPhone);
-      if (exists) {
-        Alert.alert("Error", "Nomor ponsel sudah terdaftar.");
-        setLoading(false);
-        return;
-      }
-
-      const otp = generateOtp();
-
-      // Kirim OTP
-      const response = await fetch('https://app.saungwa.com/api/create-message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: formattedPhone,
-          authkey: "Z8hxOuMsQapmnfe3GFkNbmgWMuOLLcVxnU1oO6fufLFKy0bpS4",
-          appkey: "f21f3e8b-820c-4598-895a-ae034cbb53d6",
-          message: `Kode OTP Anda adalah ${otp}`
-        }),
-      });
-
-      const data = await response.text();
-
-      if (response.ok) {
-        // Simpan ke Firestore
-        const userRef = await firestore().collection('users').add({
-          fullname,
-          phone: formattedPhone,
-          email,
-          isActive: false,
-          createdAt: firestore.FieldValue.serverTimestamp(),
-        });
-
-        // Simpan OTP
-        await firestore().collection('otp').add({
-          uid: userRef.id,
-          phone: formattedPhone,
-          otp: otp,
-          createdAt: firestore.FieldValue.serverTimestamp(),
-        });
-
-        navigation.navigate('Otp', { phoneNumber: formattedPhone, otp });
-      } else {
-        Alert.alert("Gagal", data || 'Gagal mengirim OTP.');
-      }
+      const userData = {
+        fullname,
+        email,
+        noNIK,
+        address,
+      };
+      await postData('auth/updateProfile', userData);
+      setLoading(false);
     } catch (err) {
       Alert.alert('Error', 'Terjadi kesalahan saat mendaftar.');
     } finally {
@@ -122,13 +86,23 @@ const RegisterScreen = ({ navigation }) => {
               editable={!loading}
             />
 
-            <Text style={styles.label}>Nomor Ponsel</Text>
+            <Text style={styles.label}>No NIK</Text>
             <TextInput
               style={styles.input}
-              placeholder="Cth 081234567890"
+              placeholder="Masukkan No NIK"
               keyboardType="phone-pad"
-              value={phone}
-              onChangeText={setPhone}
+              value={noNIK}
+              onChangeText={setNoNIK}
+              editable={!loading}
+            />
+
+            <Text style={styles.label}>Alamat</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Masukkan No NIK"
+              keyboardType="default"
+              value={address}
+              onChangeText={setAddress}
               editable={!loading}
             />
 
@@ -180,14 +154,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 16,
     backgroundColor: '#fff',
-    elevation:1
+    elevation: 1
   },
   button: {
     backgroundColor: '#F3C623',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-    elevation:1
+    elevation: 1
   },
   buttonLoading: {
     backgroundColor: '#777',
