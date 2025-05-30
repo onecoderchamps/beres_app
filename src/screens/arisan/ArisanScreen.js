@@ -47,7 +47,7 @@ const ArisanScreen = ({ navigation }) => {
             setArisanData(res.data);
             setLoading(false);
         } catch (error) {
-            console.error("Gagal fetch Arisan:", error);
+            Alert.alert("Error", error || "Terjadi kesalahan saat memverifikasi.");
         }
     };
 
@@ -124,7 +124,7 @@ const ArisanScreen = ({ navigation }) => {
             resetForm();
             getDatabaseArisan();
         } catch (error) {
-            Alert.alert("Error", error.response?.data?.message || "Gagal menambah arisan.");
+            Alert.alert("Error", error || "Terjadi kesalahan saat memverifikasi.");
         }
     };
 
@@ -153,7 +153,7 @@ const ArisanScreen = ({ navigation }) => {
                 ) : (
                     <View style={styles.cardContainer}>
                         {arisanData.map((item) => (
-                            <TouchableOpacity onPress={() => navigation.navigate("PatunganDetail")} key={item} style={styles.card}>
+                            <TouchableOpacity onPress={() => navigation.navigate("ArisanDetail",{data: item})} key={item} style={styles.card}>
                                 <ArisanComponent key={item} data={item} />
                             </TouchableOpacity>
                         ))}

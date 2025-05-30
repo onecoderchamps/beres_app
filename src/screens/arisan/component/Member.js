@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { getData, postData } from '../../../api/service';
 
-const Member = ({ data }) => {
+const Member = ({ data, getArisanDatabase }) => {
     const bulanSekarang = new Date().toLocaleString('id-ID', { month: 'long' });
     const [datas, setdatas] = useState("");
 
@@ -21,13 +21,15 @@ const Member = ({ data }) => {
         getDatabase()
     }, []);
 
-    const handleBayar = async () => {
+    const handleBayar = async (items) => {
         const formData = {
             idTransaksi: data.id,
+            idUser: items?.idUser
         };
         try {
-            const response = await postData('Arisan/PayArisan',formData);
+            const response = await postData('Arisan/PayCompleteArisan',formData);
             Alert.alert("Berhasil", response.message);
+            getArisanDatabase();
         } catch (error) {
             console.log(error)
             Alert.alert("Error", error.data.errorMessage.Error || "Terjadi kesalahan saat memverifikasi.");
@@ -57,11 +59,7 @@ const Member = ({ data }) => {
                         <Text style={[styles.cell, styles.slot]}>{item.jumlahLot}</Text>
 
                         {!item.isMonthPayed ? (
-                            datas?.role === '2' ? (
-                            <TouchableOpacity onPress={() => handleBayar(item)} style={[{ backgroundColor: 'green', paddingVertical: 4, paddingHorizontal: 8, borderRadius: 4,textAlign:'center' }]}>
-                                <Text style={{ color: 'white', fontWeight: 'bold' }}>Bayar</Text>
-                            </TouchableOpacity>
-                            ) : <Icon name="close" size={16} color="red" style={[styles.cell, styles.terima]} />
+                            <Icon name="close" size={16} color="red" style={[styles.cell, styles.terima]} />
                         ) : (
                             <Icon name="check" size={16} color="green" style={[styles.cell, styles.terima]} />
                         )}

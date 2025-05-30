@@ -13,6 +13,7 @@ import {
     Linking,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { getData } from '../../api/service';
 
 const { width } = Dimensions.get('window');
 
@@ -20,15 +21,31 @@ const SaldoScreen = () => {
     const [loading, setLoading] = useState(true);
     const [saldo, setSaldo] = useState(1500000);
     const [history, setHistory] = useState([]);
+    const [datas, setdatas] = useState("");
+    const [rekening, setrekening] = useState("");
+
+    
+        const getDatabase = async () => {
+            try {
+                const response = await getData('auth/verifySessions');
+                const rekening = await getData('rekening');
+                setdatas(response.data);
+                setrekening(rekening.data);
+                console.log('Rekening:', rekening.data);
+                setLoading(false);
+            } catch (error) {
+                Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+            }
+        };
 
     useEffect(() => {
+        getDatabase();
         setTimeout(() => {
             setHistory([
                 { id: '1', title: 'Top Up Bulan Mei', date: '20 Mei 2025', amount: 250000, type: 'in' },
                 { id: '2', title: 'Iuran Arisan', date: '15 Mei 2025', amount: 150000, type: 'out' },
                 { id: '3', title: 'Top Up Bulan April', date: '1 Mei 2025', amount: 300000, type: 'in' },
             ]);
-            setLoading(false);
         }, 500);
     }, []);
 
@@ -61,14 +78,14 @@ const SaldoScreen = () => {
                         {/* Saldo Section */}
                         <View style={styles.saldoContainer}>
                             <Icon name="money" size={24} color="#214937" style={{ marginRight: 10 }} />
-                            <Text style={styles.saldoText}>Rp {saldo.toLocaleString('id-ID')}</Text>
+                            <Text style={styles.saldoText}>Rp {datas.balance.toLocaleString('id-ID')}</Text>
                         </View>
 
                         {/* Info Transfer Section */}
                         <View style={styles.infoContainer}>
-                            <InfoRow label="Bank" value="BCA" />
-                            <InfoRow label="Nama Rekening" value="PT. Patungan Sejahtera" />
-                            <InfoRow label="Nomor Rekening" value="1234567890" />
+                            <InfoRow label="Bank" value={rekening.bank} />
+                            <InfoRow label="Nama Rekening" value={rekening.holder} />
+                            <InfoRow label="Nomor Rekening" value={rekening.rekening} />
                             <Text style={styles.noteText}>
                                 *Harap transfer ke nomor rekening diatas.
                             </Text>

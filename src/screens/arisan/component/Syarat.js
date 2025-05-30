@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, TouchableOpacity, StyleSheet, View, Text, ScrollView, Image, Dimensions } from 'react-native';
+import { getData } from '../../../api/service';
 
 const { width, height } = Dimensions.get('window');
 
 const Syarat = ({ data }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+
+    const [datas, setdatas] = useState("");
+
+    const getDatabase = async () => {
+        try {
+            const response = await getData('rekening/SettingArisan');
+            setdatas(response.data);
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+        }
+    };
+
+    useEffect(() => {
+        getDatabase()
+    }, []);
 
     const openImage = (uri) => {
         setSelectedImage(uri);
@@ -24,6 +40,8 @@ const Syarat = ({ data }) => {
                 showsVerticalScrollIndicator={false}
             >
                 <Text style={styles.sectionTitle}>Syarat dan Ketentuan</Text>
+                <Text style={styles.desc}>{datas}</Text>
+
             </ScrollView>
 
             {/* Modal Gambar Fullscreen */}
@@ -59,7 +77,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
         color: '#222',
-        marginBottom: 5,
+        marginBottom: 20,
     },
     desc: {
         color: '#444',

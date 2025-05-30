@@ -2,8 +2,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Base URL API
-const API_URL = 'https://beres-backend-609517395039.asia-southeast2.run.app/api/v1/';
-// const API_URL = 'http://192.168.100.60:5000/api/v1/';
+// const API_URL = 'https://beres-backend-609517395039.asia-southeast2.run.app/api/v1/';
+const API_URL = 'http://192.168.100.35:5000/api/v1/';
 
 
 // Membuat instance Axios
@@ -43,7 +43,8 @@ api.interceptors.response.use(
 
       switch (status) {
         case 400:
-          console.error('❌ [400] Bad Request:', data?.message || 'Permintaan tidak valid');
+          return Promise.reject(data?.errorMessage.Error); // Kembalikan error untuk ditangani di tempat lain
+          console.error('❌ [400] Bad Request:', data?.errorMessage.Error || 'Permintaan tidak valid');
           break;
         case 401:
           console.error('🔒 [401] Unauthorized: Token tidak valid atau kadaluarsa');
