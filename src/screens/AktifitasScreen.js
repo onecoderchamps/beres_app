@@ -12,62 +12,89 @@ import {
   ActivityIndicator,
   Dimensions,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
+import { getData } from '../api/service';
 
 const { width } = Dimensions.get('window');
 
-const AktifitasScreen = () => {
+const AktifitasScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [activities, setActivities] = useState([]);
+  const [detailData, setDetailData] = useState([]);
+  const [detailData2, setDetailData2] = useState([]);
 
-  
+
+  const getArisanDatabase = async () => {
+    try {
+      const response = await getData('Arisan/ByUser');
+      setDetailData(response.data);
+      setLoading(false)
+    } catch (error) {
+      Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+    }
+  };
+
+  const getPatunganDatabase = async () => {
+    try {
+      const response = await getData('Patungan/ByUser');
+      setDetailData2(response.data);
+      setLoading(false)
+    } catch (error) {
+      Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+    }
+  };
+
+
   useEffect(() => {
+    getArisanDatabase();
+    getPatunganDatabase();
+    console.log(detailData.concat(detailData2));
     // Simulasi fetch data (ganti dengan Firestore jika perlu)
     setTimeout(() => {
-      setActivities([
-        {
-          id: '1',
-          type: 'Emas',
-          title: 'Arisan Emas Bulan Mei',
-          amount: 'Rp 500.000',
-          date: '10 Mei 2025',
-          icon: '💰',
-        },
-        {
-          id: '2',
-          type: 'Properti',
-          title: 'Patungan Tanah Bogor',
-          amount: 'Rp 1.200.000',
-          date: '2 Mei 2025',
-          icon: '🏠',
-        },
-      ]);
       setLoading(false);
     }, 1000);
   }, []);
 
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
+    <TouchableOpacity
+      onPress={() => {
+        if (item.type === "Arisan") {
+          navigation.navigate("ArisanDetail", { data: item });
+        } else if (item.type === "Patungan") {
+          navigation.navigate("PatunganDetail", { data: item });
+        }
+      }}
+      style={styles.card}
+    >
       <Text style={styles.icon}>{item.icon}</Text>
       <View style={{ flex: 1 }}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.date}>{item.date}</Text>
+        <Text style={styles.title}>
+          {item.title}
+        </Text>
+        <Text style={styles.date}>{item.keterangan}</Text>
+        <Text style={styles.date}>{item.desc}</Text>
       </View>
-      <Text style={styles.amount}>{item.amount}</Text>
-    </View>
+      {item.type === "Arisan" &&
+        <Text style={styles.amount}>ARISAN</Text>
+      }
+      {item.type === "Patungan" &&
+        <Text style={styles.amount}>PATUNGAN</Text>
+      }
+    </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
       <StatusBar backgroundColor="#214937" barStyle="dark-content" />
-      <ScrollView contentContainerStyle={{ padding: 20,marginVertical: 20 }}>
+      <ScrollView contentContainerStyle={{ padding: 20, marginVertical: 20 }}>
         <Text style={styles.header}>Aktivitas Aset</Text>
 
         {loading ? (
           <ActivityIndicator size="large" color="#214937" style={{ marginTop: 30 }} />
         ) : (
           <FlatList
-            data={activities}
+            data={detailData.concat(detailData2)}
             keyExtractor={(item) => item.id}
             renderItem={renderItem}
             scrollEnabled={false}

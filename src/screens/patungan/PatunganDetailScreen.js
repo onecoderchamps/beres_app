@@ -11,8 +11,14 @@ import {
     Modal,
     TextInput,
     Alert,
+    Image,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Deskripsi from './component/Deskripsi';
+import Chat from './component/Chat';
+import Member from './component/Member';
+import Syarat from './component/Syarat';
+import { getData, postData } from '../../api/service';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,60 +28,78 @@ const banners = [
     { id: '3', color: '#55efc4', text: 'Banner 3' },
 ];
 
-const tabs = ['Deskripsi', 'Member', 'Syarat'];
+const tabs = ['Deskripsi', 'Syarat', 'Member', 'Chat'];
 
-const contentData = {
-    Deskripsi: 'Ini adalah isi Deskripsi tentang produk atau layanan.',
-    Member: 'Informasi member dan keuntungan bergabung.',
-    Syarat: 'Syarat dan ketentuan berlaku pada program ini.',
-};
-
-export default function PatunganDetail({navigation}) {
+export default function PatunganDetail({ route }) {
+    const { data } = route.params
     const [activeTab, setActiveTab] = useState('Deskripsi');
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalPayment, setmodalPayment] = useState(false);
     const [jumlahLot, setJumlahLot] = useState(1);
     const [nominal, setNominal] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [detailData, setDetailData] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [datas, setdatas] = useState("");
+
+    const getDatabase = async () => {
+        try {
+            const response = await getData('auth/verifySessions');
+            console.log(response.data);
+            setdatas(response.data);
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+        }
+    };
+
+    const getPatunganDatabase = async () => {
+        try {
+            const response = await getData('Patungan/' + data?.id);
+            setDetailData(response.data);
+            setLoading(false)
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+        }
+    };
 
     const totalSaldo = 500000;
-    const iuranWajibPerLot = 100000;
+    const iuranWajibPerLot = detailData?.targetPay || 0;
 
     useEffect(() => {
+        getPatunganDatabase();
         if (jumlahLot < 1) setJumlahLot(1);
         setNominal(jumlahLot * iuranWajibPerLot);
     }, [jumlahLot]);
 
-    const onBayarSekarang = () => {
-        if (!jumlahLot || jumlahLot < 1) {
-            Alert.alert('Error', 'Jumlah lot harus minimal 1');
-            return;
+    const onBayarSekarang = async () => {
+        const formData = {
+            idTransaksi: data.id,
         }
-        if (nominal > totalSaldo) {
-            Alert.alert(
-                'Saldo Tidak Cukup',
-                'Saldo Anda tidak cukup, silahkan isi ulang.',
-                [
-                    {
-                        text: 'Nanti Saja',
-                        style: 'cancel',
-                    },
-                    {
-                        text: 'Topup Sekarang',
-                        onPress: () => {
-                            navigation.navigate('Saldo')
-                        },
-                    },
-                ],
-                { cancelable: true }
-            );
-            return;
+        try {
+            const response = await postData('Patungan/PayPatungan', formData);
+            getPatunganDatabase();
+            setmodalPayment(false)
+        } catch (error) {
+            Alert.alert("Error", error || "Terjadi kesalahan saat memverifikasi.");
         }
-        Alert.alert(
-            'Berhasil',
-            `Anda membayar ${jumlahLot} lot = Rp${nominal.toLocaleString()}`
-        );
-        setJumlahLot(1);
-        setModalVisible(false);
+    };
+
+    const GabungMember = async () => {
+        const formData = {
+            "idUser": datas?.phone,
+            "idPatungan": data?.id,
+            "phoneNumber": datas?.phone,
+            "jumlahLot": jumlahLot,
+            "isActive": true,
+            "isPayed": false
+        }
+        try {
+            const response = await postData('Patungan/AddNewPatunganMember', formData);
+            getPatunganDatabase();
+            setModalVisible(false)
+        } catch (error) {
+            Alert.alert("Error", error || "Terjadi kesalahan saat memverifikasi.");
+        }
     };
 
     const handleScroll = (event) => {
@@ -84,80 +108,108 @@ export default function PatunganDetail({navigation}) {
         setCurrentIndex(index);
     };
 
+    if (loading) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <StatusBar backgroundColor="#214937" barStyle="dark-content" />
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text>Loading...</Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar backgroundColor="#214937" barStyle="dark-content" />
-
-            {/* Banner Slider */}
-            <ScrollView
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                style={styles.bannerContainer}
-                onScroll={handleScroll}
-                scrollEventThrottle={16}
-            >
-                {banners.map((banner) => (
-                    <View
-                        key={banner.id}
-                        style={[styles.banner, { backgroundColor: banner.color }]}
-                    >
-                        <Text style={styles.bannerText}>{banner.text}</Text>
-                    </View>
-                ))}
-            </ScrollView>
-
-            {/* Dots Indicator */}
-            <View style={styles.dotsContainer}>
-                {banners.map((_, index) => (
-                    <View
-                        key={index}
-                        style={[
-                            styles.dot,
-                            currentIndex === index && styles.activeDot,
-                        ]}
-                    />
-                ))}
-            </View>
+            {activeTab !== 'Chat' &&
+                <><ScrollView
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.bannerContainer}
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
+                >
+                    {detailData.banner.map((banner, idx) => (
+                        <Image key={idx} source={{ uri: banner }} style={styles.banner} />
+                    ))}
+                </ScrollView><View style={styles.dotsContainer}>
+                        {detailData.banner.map((_, index) => (
+                            <View
+                                key={index}
+                                style={[
+                                    styles.dot,
+                                    currentIndex === index && styles.activeDot,
+                                ]} />
+                        ))}
+                    </View></>
+            }
 
             {/* Tab Bar */}
             <View style={styles.tabBarContainer}>
-                {tabs.map((tab) => (
-                    <TouchableOpacity
-                        key={tab}
-                        onPress={() => setActiveTab(tab)}
-                        style={[
-                            styles.tabItem,
-                            activeTab === tab && styles.activeTabItem,
-                        ]}
-                    >
-                        <Text
+                {tabs.map((tab) => {
+                    if (
+                        detailData?.statusMember?.isMembership === false &&
+                        (tab === 'Member' || tab === 'Chat')
+                    ) {
+                        return null; // Jangan render tab ini
+                    }
+
+                    return (
+                        <TouchableOpacity
+                            key={tab}
+                            onPress={() => setActiveTab(tab)}
                             style={[
-                                styles.tabText,
-                                activeTab === tab && styles.activeTabText,
+                                styles.tabItem,
+                                activeTab === tab && styles.activeTabItem,
                             ]}
                         >
-                            {tab}
-                        </Text>
-                    </TouchableOpacity>
-                ))}
+                            <Text
+                                style={[
+                                    styles.tabText,
+                                    activeTab === tab && styles.activeTabText,
+                                ]}
+                            >
+                                {tab}
+                            </Text>
+                        </TouchableOpacity>
+                    );
+                })}
             </View>
 
             {/* Tab Content */}
             <View style={styles.contentContainer}>
-                <ScrollView>
-                    <Text style={styles.contentText}>{contentData[activeTab]}</Text>
-                </ScrollView>
+                {activeTab !== 'Chat' &&
+                    <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+                        {activeTab === 'Deskripsi' &&
+                            <Deskripsi data={detailData} />
+                        }
+                        {activeTab === 'Member' &&
+                            <Member data={detailData} getPatunganDatabase={getPatunganDatabase} />
+                        }
+
+                        {activeTab === 'Syarat' &&
+                            <Syarat data={detailData} />
+                        }
+                    </ScrollView>
+                }
+                {activeTab === 'Chat' &&
+                    <Chat data={detailData} />
+                }
             </View>
 
             {/* Floating Button */}
-            <TouchableOpacity
-                style={styles.floatingButton}
-                activeOpacity={0.8}
-                onPress={() => setModalVisible(true)}
-            >
-                <Text style={styles.floatingButtonText}>Beli Aset</Text>
-            </TouchableOpacity>
+            {
+                detailData?.statusMember?.isMembership === false &&
+                <TouchableOpacity
+                    style={styles.floatingButton}
+                    activeOpacity={0.8}
+                    onPress={() => { setModalVisible(true); getDatabase() }}
+                >
+                    <Text style={styles.floatingButtonText}>Beli Asset</Text>
+                </TouchableOpacity>
+            }
 
             {/* Modal */}
             <Modal
@@ -168,15 +220,15 @@ export default function PatunganDetail({navigation}) {
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Informasi Pembelian</Text>
+                        <Text style={styles.modalTitle}>Beli Asset</Text>
 
-                        <Text style={styles.label}>Saldo Anda:</Text>
-                        <Text style={styles.value}>Rp {totalSaldo.toLocaleString()}</Text>
+                        <Text style={styles.label}>Total Saldo:</Text>
+                        <Text style={styles.value}>Rp {datas?.balance}</Text>
 
-                        <Text style={styles.label}>Harga / Lot:</Text>
-                        <Text style={styles.value}>Rp {iuranWajibPerLot.toLocaleString()}</Text>
+                        <Text style={styles.label}>Harga Wajib per Lembar:</Text>
+                        <Text style={styles.value}>Rp {detailData?.targetPay}</Text>
 
-                        <Text style={styles.label}>Jumlah Lot:</Text>
+                        <Text style={styles.label}>Jumlah Lembar:</Text>
                         <View style={styles.lotInputContainer}>
                             <TouchableOpacity
                                 onPress={() => setJumlahLot(prev => (prev > 1 ? prev - 1 : 1))}
@@ -188,7 +240,7 @@ export default function PatunganDetail({navigation}) {
                             <TextInput
                                 style={styles.lotInput}
                                 keyboardType="numeric"
-                                value={jumlahLot.toString()}
+                                value={jumlahLot.toLocaleString()}
                                 onChangeText={(text) => {
                                     const num = parseInt(text);
                                     if (!isNaN(num) && num > 0) setJumlahLot(num);
@@ -208,11 +260,11 @@ export default function PatunganDetail({navigation}) {
                         <Text style={styles.label}>Total Nominal:</Text>
                         <TextInput
                             style={[styles.input, { backgroundColor: '#eee' }]}
-                            value={`Rp ${nominal.toLocaleString()}`}
+                            value={`Rp ${nominal}`}
                             editable={false}
                         />
 
-                        <TouchableOpacity style={styles.payButton} onPress={onBayarSekarang}>
+                        <TouchableOpacity style={styles.payButton} onPress={GabungMember}>
                             <Text style={styles.payButtonText}>Bayar Sekarang</Text>
                         </TouchableOpacity>
 
@@ -225,7 +277,38 @@ export default function PatunganDetail({navigation}) {
                     </View>
                 </View>
             </Modal>
-        </SafeAreaView>
+
+            {/* Modal */}
+            <Modal
+                visible={modalPayment}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setmodalPayment(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Bayar Iuran</Text>
+
+                        <Text style={styles.label}>Total Saldo :</Text>
+                        <Text style={styles.value}>Rp {datas?.balance}</Text>
+
+                        <Text style={styles.label}>Iuran :</Text>
+                        <Text style={styles.value}>Rp {detailData?.targetPay}</Text>
+
+                        <TouchableOpacity style={styles.payButton} onPress={onBayarSekarang}>
+                            <Text style={styles.payButtonText}>Bayar Sekarang</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => setmodalPayment(false)}
+                            style={styles.closeButton}
+                        >
+                            <Text style={styles.closeButtonText}>Batal</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+        </SafeAreaView >
     );
 }
 
@@ -234,8 +317,7 @@ const styles = StyleSheet.create({
     bannerContainer: { height: 150 },
     banner: {
         width: width,
-        justifyContent: 'center',
-        alignItems: 'center',
+        resizeMode: 'cover',
     },
     bannerText: {
         color: '#fff',
@@ -248,7 +330,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: 10,
         position: 'absolute',
-        top: height/4.2,
+        top: height / 4.2,
         left: 10,
         zIndex: 1,
         backgroundColor: 'transparent',

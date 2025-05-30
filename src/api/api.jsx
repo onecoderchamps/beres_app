@@ -56,9 +56,11 @@ api.interceptors.response.use(
           console.error('🔍 [404] Not Found: Resource tidak ditemukan');
           break;
         case 500:
+          return Promise.reject(data?.errorMessage.Error);
           console.error('🔥 [500] Server Error:', data?.message || 'Terjadi kesalahan pada server');
           break;
         default:
+          return Promise.reject(data?.errorMessage.Error);
           console.error(`⚠️ [${status}] Error tidak terduga:`, data?.message || 'Terjadi kesalahan');
       }
     } else if (error.request) {

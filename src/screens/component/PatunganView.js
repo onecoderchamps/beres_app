@@ -6,7 +6,7 @@ const { width } = Dimensions.get('window');
 const cardWidth = (width - 60) / 2;
 
 // const sampleData = {
-//   image: 'https://api.patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc',
+//   image: 'https://api.Patunganproperti.com/api/v1/upload?folder=asset_joint_property&filename=asset_image4_1728706413490.jpeg.enc',
 //   nama: 'Rumah Rimbo Datar',
 //   alamat: 'Jl. Rimbo Datar No.36 ... Sumatera Barat',
 //   hargaLot: 'Rp 10.000.000',
@@ -34,54 +34,44 @@ const iconMap = {
   },
 };
 
-const formatHargaToK = (hargaString) => {
-  const number = parseInt(hargaString.replace(/[^\d]/g, ''), 10);
-  if (isNaN(number)) return hargaString;
-  return number >= 1000 ? `${(number / 1000).toLocaleString('id-ID')} K` : number.toLocaleString('id-ID');
-};
-
 const PatunganComponent = ({ data }) => {
   const iconInfo = iconMap[data.type] || iconMap['aset'];
 
   return (
     <View style={[styles.card]}>
       <View>
-        <Image source={{ uri: data.image }} style={styles.image} />
+        <Image source={{ uri: data.banner[0] }} style={styles.image} />
 
         {/* Badge Ikon */}
-        <View style={styles.badgeContainer}>
+        {/* <View style={styles.badgeContainer}>
           <MaterialCommunityIcons
             name={iconInfo.name}
             size={20}
             color={iconInfo.color}
           />
-        </View>
+        </View> */}
 
         {/* Badge Miring "3 Lot Tersedia" */}
-        {data.lotTersedia > 0 &&
+        {data.sisaSlot > 0 &&
           <View style={styles.ribbonContainer}>
-            <Text style={styles.ribbonText}>Sisa {data.lotTersedia}</Text>
+            <Text style={styles.ribbonText}>Sisa {data.sisaSlot}</Text>
           </View>
         }
       </View>
 
 
       <View style={styles.content}>
-        <Text style={styles.nama} numberOfLines={1}>{data.nama}</Text>
-        <Text style={styles.alamat} numberOfLines={2}>{data.alamat}</Text>
-
-        <View style={styles.progressBarContainer}>
-          <View style={[styles.progressBar, { width: data.percentage }]} />
-        </View>
+        <Text style={styles.nama} numberOfLines={1}>{data.title}</Text>
+        <Text style={styles.alamat} numberOfLines={1}>{data.keterangan}</Text>
 
         <View style={styles.row}>
           <View style={styles.infoBox}>
-            <Text style={styles.label}>Harga/Lot</Text>
-            <Text style={styles.value} numberOfLines={1}>Rp {formatHargaToK(data.hargaLot)}</Text>
+            <Text style={styles.label}>Harga / Lembar</Text>
+            <Text style={styles.value} numberOfLines={1}>Rp {data.targetPay.toLocaleString('id-ID')}</Text>
           </View>
           <View style={styles.infoBox}>
-            <Text style={styles.label}>Harga</Text>
-            <Text style={styles.value} numberOfLines={1}>Rp {formatHargaToK(data.hargaJual)}</Text>
+            <Text style={styles.label}>Total Asset</Text>
+            <Text style={styles.value} numberOfLines={1}>Rp {data.totalPrice.toLocaleString('id-ID')}</Text>
           </View>
         </View>
       </View>

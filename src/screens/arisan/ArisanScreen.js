@@ -24,7 +24,7 @@ const { width } = Dimensions.get('window');
 const ArisanScreen = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [loading, setLoading] = useState(true);
-    
+
     // Form state
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -32,12 +32,25 @@ const ArisanScreen = ({ navigation }) => {
     const [targetLot, setTargetLot] = useState('');
     const [targetAmount, setTargetAmount] = useState('');
     const [penagihanDateText, setPenagihanDateText] = useState('');
-    
+
     const [bannerFiles, setBannerFiles] = useState([]);
     const [documentFiles, setDocumentFiles] = useState([]);
     const [arisanData, setArisanData] = useState([]);
 
+    const [datas, setdatas] = useState("");
+
+    const getDatabase = async () => {
+        try {
+            const response = await getData('auth/verifySessions');
+            console.log(response.data);
+            setdatas(response.data);
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+        }
+    };
+
     useEffect(() => {
+        getDatabase();
         getDatabaseArisan();
     }, []);
 
@@ -153,7 +166,7 @@ const ArisanScreen = ({ navigation }) => {
                 ) : (
                     <View style={styles.cardContainer}>
                         {arisanData.map((item) => (
-                            <TouchableOpacity onPress={() => navigation.navigate("ArisanDetail",{data: item})} key={item} style={styles.card}>
+                            <TouchableOpacity onPress={() => navigation.navigate("ArisanDetail", { data: item })} key={item} style={styles.card}>
                                 <ArisanComponent key={item} data={item} />
                             </TouchableOpacity>
                         ))}
@@ -161,7 +174,9 @@ const ArisanScreen = ({ navigation }) => {
                 )}
             </ScrollView>
 
-            <FloatingButton onPress={() => setModalVisible(true)} />
+            {datas?.role === '2' &&
+                <FloatingButton onPress={() => setModalVisible(true)} />
+            }
 
             <Modal animationType="fade" transparent visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
                 <View style={styles.modalOverlay}>

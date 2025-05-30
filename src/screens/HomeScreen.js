@@ -16,24 +16,36 @@ import messaging from '@react-native-firebase/messaging';
 import { request, PERMISSIONS } from 'react-native-permissions';
 
 import artikelData from './../dummy/artikel.json'; // Pastikan path ini sesuai dengan struktur proyek Anda
-import data from './../dummy/banner.json'; // Pastikan path ini sesuai dengan struktur proyek Anda
-import patunganData from './../dummy/patungan.json';
+import data from './../dummy/banner.json';
 import { getData, postData } from '../api/service';
+import PatunganComponent from './component/PatunganView';
 
 const { width } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
 
     const [arisanData, setArisanData] = useState([]);
+    const [patunganData, setPatunganData] = useState([]);
 
     useEffect(() => {
         getDatabaseArisan();
+        getDatabasePatungan();
     }, []);
 
     const getDatabaseArisan = async () => {
         try {
             const res = await getData('Arisan');
             setArisanData(res.data);
+        } catch (error) {
+            console.error("Gagal fetch Arisan:", error);
+        }
+    };
+
+    const getDatabasePatungan = async () => {
+        try {
+            const res2 = await getData('Patungan');
+            console.log("Patungan Data:", res2.data);
+            setPatunganData(res2.data);
         } catch (error) {
             console.error("Gagal fetch Arisan:", error);
         }
@@ -142,9 +154,9 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.sectionTitle}>Promo Patungan</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
                 {patunganData.map((item, idx) =>
-                    item.isPromo ? (
-                        <TouchableOpacity key={idx} onPress={() => navigation.navigate("PatunganDetail")} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 1.8 }}>
-                            <PatunganCard data={item} />
+                    !item.isPromo ? (
+                        <TouchableOpacity key={idx} onPress={() => navigation.navigate("PatunganDetail",{data: item})} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 1.8 }}>
+                            <PatunganComponent data={item} />
                         </TouchableOpacity>
                     ) : null
                 )}

@@ -67,7 +67,7 @@ const AkunScreen = () => {
         { label: 'Support', icon: 'lifebuoy' },
         // { label: 'Riwayat Transaksi', icon: 'history' },
         { label: 'Keamanan', icon: 'shield-lock-outline' },
-        { label: 'Notifikasi', icon: 'bell-outline' },
+        // { label: 'Notifikasi', icon: 'bell-outline' },
         { label: 'Tentang Aplikasi', icon: 'information-outline' },
     ];
 
@@ -90,9 +90,9 @@ const AkunScreen = () => {
                         <Text style={styles.profileName}>{data.fullName === "" ? "User Beres" : data.fullName}</Text>
                         <Text style={styles.profilePhone}>{data.phone}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    {/* <TouchableOpacity onPress={() => setModalVisible(true)}>
                         <Icon name="pencil-outline" size={24} color="#214937" />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
 
                 {/* LIST MENU */}

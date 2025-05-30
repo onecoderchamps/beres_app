@@ -24,28 +24,23 @@ const Deskripsi = ({ data }) => {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.row}>
-                    <Text style={styles.label}>Title</Text>
+                    <Text style={styles.label}>Nama Asset</Text>
                     <Text style={styles.value}>{data.title}</Text>
                 </View>
 
                 <View style={styles.row}>
-                    <Text style={styles.label}>Keterangan</Text>
+                    <Text style={styles.label}>Alamat</Text>
                     <Text style={styles.value}>{data.keterangan}</Text>
                 </View>
 
                 <View style={styles.row}>
-                    <Text style={styles.label}>Target</Text>
+                    <Text style={styles.label}>Harga Total</Text>
                     <Text style={styles.value}>Rp {data.totalPrice.toLocaleString('id')}</Text>
                 </View>
 
                 <View style={styles.row}>
-                    <Text style={styles.label}>Iuran Bulanan</Text>
+                    <Text style={styles.label}>Harga / Lembar</Text>
                     <Text style={styles.value}>Rp {data.targetPay.toLocaleString('id')}</Text>
-                </View>
-
-                <View style={styles.row}>
-                    <Text style={styles.label}>Durasi</Text>
-                    <Text style={styles.value}>{data.totalSlot.toLocaleString('id')} Bulan</Text>
                 </View>
                 <Text style={{borderColor: '#ccc', backgroundColor:'#00000020',height:0.5,marginVertical:10}} />
 
