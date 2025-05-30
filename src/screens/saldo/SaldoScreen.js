@@ -84,8 +84,8 @@ const SaldoScreen = () => {
                         {/* Info Transfer Section */}
                         <View style={styles.infoContainer}>
                             <InfoRow label="Bank" value={rekening.bank} />
-                            <InfoRow label="Nama Rekening" value={rekening.holder} />
-                            <InfoRow label="Nomor Rekening" value={rekening.rekening} />
+                            <InfoRow label="Holder" value={rekening.holder} />
+                            <InfoRow label="Nomor" value={rekening.rekening} />
                             <Text style={styles.noteText}>
                                 *Harap transfer ke nomor rekening diatas.
                             </Text>

@@ -20,6 +20,8 @@ const ImageSlider = ({ images }) => {
     setCurrentIndex(index);
   };
 
+  console.log('Images:', images);
+
   return (
     <View style={styles.sliderContainer}>
       <FlatList
@@ -31,7 +33,7 @@ const ImageSlider = ({ images }) => {
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
         renderItem={({ item }) => (
-          <Image source={{ uri: item.image}} style={styles.image} />
+          <Image source={{ uri: item}} style={styles.image} />
         )}
       />
       <View style={styles.indicatorContainer}>

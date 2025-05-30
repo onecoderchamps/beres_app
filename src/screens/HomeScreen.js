@@ -15,8 +15,7 @@ import ArisanCard from './component/ArisanView';
 import messaging from '@react-native-firebase/messaging';
 import { request, PERMISSIONS } from 'react-native-permissions';
 
-import artikelData from './../dummy/artikel.json'; // Pastikan path ini sesuai dengan struktur proyek Anda
-import data from './../dummy/banner.json';
+import artikelData from './../dummy/artikel.json';
 import { getData, postData } from '../api/service';
 import PatunganComponent from './component/PatunganView';
 
@@ -26,8 +25,21 @@ const HomeScreen = ({ navigation }) => {
 
     const [arisanData, setArisanData] = useState([]);
     const [patunganData, setPatunganData] = useState([]);
+    const [data, setdata] = useState([]);
+
+    const getDatabase = async () => {
+        try {
+            const response = await getData('rekening/Banner');
+            console.log("Banner Data:", response.data);
+            setdata(response.data);
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi OTP.");
+            setLoading(false)
+        }
+    };
 
     useEffect(() => {
+        getDatabase();
         getDatabaseArisan();
         getDatabasePatungan();
     }, []);
@@ -155,7 +167,7 @@ const HomeScreen = ({ navigation }) => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
                 {patunganData.map((item, idx) =>
                     !item.isPromo ? (
-                        <TouchableOpacity key={idx} onPress={() => navigation.navigate("PatunganDetail",{data: item})} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 1.8 }}>
+                        <TouchableOpacity key={idx} onPress={() => navigation.navigate("PatunganDetail", { data: item })} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 1.8 }}>
                             <PatunganComponent data={item} />
                         </TouchableOpacity>
                     ) : null
@@ -167,7 +179,7 @@ const HomeScreen = ({ navigation }) => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
                 {arisanData.map((item) =>
                     !item.isPromo ? (
-                        <TouchableOpacity onPress={() => navigation.navigate("ArisanDetail",{data: item})} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 2 }} key={item}>
+                        <TouchableOpacity onPress={() => navigation.navigate("ArisanDetail", { data: item })} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 2 }} key={item}>
                             <ArisanCard data={item} />
                         </TouchableOpacity>
                     ) : null
