@@ -4,7 +4,8 @@ import {
     TouchableOpacity,
     StatusBar,
     Dimensions,
-    PermissionsAndroid
+    PermissionsAndroid,
+    Alert
 } from 'react-native';
 import ImageSlider from './component/ImageSlider';
 import PatunganCard from './component/PatunganView';
@@ -140,9 +141,9 @@ const HomeScreen = ({ navigation }) => {
             {/* 3. Promo */}
             <Text style={styles.sectionTitle}>Promo Patungan</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll} contentContainerStyle={{ paddingHorizontal: 10 }}>
-                {patunganData.map((item) =>
+                {patunganData.map((item, idx) =>
                     item.isPromo ? (
-                        <TouchableOpacity onPress={() => navigation.navigate("PatunganDetail")} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 1.8 }} key={item.id || item}>
+                        <TouchableOpacity key={idx} onPress={() => navigation.navigate("PatunganDetail")} style={{ marginHorizontal: 5, marginVertical: 10, width: width / 1.8 }}>
                             <PatunganCard data={item} />
                         </TouchableOpacity>
                     ) : null

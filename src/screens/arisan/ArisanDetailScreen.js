@@ -89,7 +89,7 @@ export default function ArisanDetail({ route }) {
         }
         Alert.alert(
             'Berhasil',
-            `Anda membayar ${jumlahLot} lot = Rp${nominal.toLocaleString()}`
+            `Anda membayar ${jumlahLot} lot = Rp${nominal}`
         );
         setJumlahLot(1);
         setModalVisible(false);
@@ -191,10 +191,10 @@ export default function ArisanDetail({ route }) {
                         <Text style={styles.modalTitle}>Gabung Member</Text>
 
                         <Text style={styles.label}>Total Saldo:</Text>
-                        <Text style={styles.value}>Rp {datas.balance.toLocaleString()}</Text>
+                        <Text style={styles.value}>Rp {datas?.balance}</Text>
 
                         <Text style={styles.label}>Harga Wajib per Lot:</Text>
-                        <Text style={styles.value}>Rp {iuranWajibPerLot.toLocaleString()}</Text>
+                        <Text style={styles.value}>Rp {datas?.balance}</Text>
 
                         <Text style={styles.label}>Jumlah Lot:</Text>
                         <View style={styles.lotInputContainer}>
@@ -208,7 +208,7 @@ export default function ArisanDetail({ route }) {
                             <TextInput
                                 style={styles.lotInput}
                                 keyboardType="numeric"
-                                value={jumlahLot.toString()}
+                                value={jumlahLot}
                                 onChangeText={(text) => {
                                     const num = parseInt(text);
                                     if (!isNaN(num) && num > 0) setJumlahLot(num);
@@ -228,7 +228,7 @@ export default function ArisanDetail({ route }) {
                         <Text style={styles.label}>Total Nominal:</Text>
                         <TextInput
                             style={[styles.input, { backgroundColor: '#eee' }]}
-                            value={`Rp ${nominal.toLocaleString()}`}
+                            value={`Rp ${nominal}`}
                             editable={false}
                         />
 

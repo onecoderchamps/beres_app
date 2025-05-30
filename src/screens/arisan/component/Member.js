@@ -10,7 +10,7 @@ const Member = ({ data }) => {
     const getDatabase = async () => {
         try {
             const response = await getData('auth/verifySessions');
-            console.log(response);
+            console.log(data);
             setdatas(response.data);
         } catch (error) {
             Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
@@ -53,7 +53,7 @@ const Member = ({ data }) => {
                 {data.memberArisan.map((item, index) => (
                     <View style={styles.row} key={index}>
                         <Text style={[styles.cell, styles.no]}>{index + 1}</Text>
-                        <Text style={[styles.cell, styles.nama]}>{item.phoneNumber}</Text>
+                        <Text style={[styles.cell, styles.nama]}>{item.name}</Text>
                         <Text style={[styles.cell, styles.slot]}>{item.jumlahLot}</Text>
 
                         {!item.isMonthPayed ? (
