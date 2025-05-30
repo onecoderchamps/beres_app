@@ -95,10 +95,22 @@ const ChatScreen = ({ data }) => {
 
     useEffect(() => {
         getProfileUser();
+
+        // Interval setiap 10 detik
+        const intervalId = setInterval(() => {
+            getProfileUser();
+        }, 5000); // 10000 ms = 10 detik
+
+        // Push notification trigger
         const unsubscribe = messaging().onMessage(async () => {
             getProfileUser();
         });
-        return () => unsubscribe();
+
+        // Cleanup interval dan listener
+        return () => {
+            clearInterval(intervalId);
+            unsubscribe();
+        };
     }, [getProfileUser]);
 
     useEffect(() => {
