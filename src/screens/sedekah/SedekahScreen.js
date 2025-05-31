@@ -15,6 +15,7 @@ import {
     FlatList,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { getData, postData } from '../../api/service';
 
 const { width } = Dimensions.get('window');
 
@@ -26,57 +27,54 @@ const SedekahScreen = ({ navigation }) => {
     const [nominal, setNominal] = useState('');
     const [keterangan, setKeterangan] = useState('');
     const [history, setHistory] = useState([]);
+    const [rekening, setrekening] = useState(0);
+
+    const getDatabase = async () => {
+        try {
+            const transaksi = await getData('Sedekah');
+            setHistory(transaksi.data.filter(item => item.type.includes('Sedekah')));
+            setrekening(transaksi.totalSedekah);
+            setLoading(false);
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+        }
+    };
 
     useEffect(() => {
-        // Simulasi fetch data
-        setTimeout(() => {
-            setHistory([
-                { id: '1', type: 'masuk', amount: 500000, desc: 'Sedekah dari Donatur A', date: '20 Mei 2025' },
-                { id: '2', type: 'keluar', amount: 250000, desc: 'Disalurkan ke Panti Asuhan', date: '22 Mei 2025' },
-                { id: '3', type: 'masuk', amount: 750000, desc: 'Donasi Mingguan', date: '18 Mei 2025' },
-            ]);
-            setLoading(false);
-        }, 500);
+        getDatabase();
     }, []);
 
-    const handleTransfer = () => {
+    const handleTransfer = async () => {
         const amount = parseInt(nominal);
-        if (!amount || amount <= 0 || !keterangan) {
-            Alert.alert('Error', 'Nominal dan keterangan harus diisi');
-            return;
-        }
-        if (amount > saldo) {
-            Alert.alert(
-                'Saldo Tidak Cukup',
-                'Saldo Anda tidak cukup, silahkan isi ulang.',
-                [
-                    {
-                        text: 'Nanti Saja',
-                        style: 'cancel',
-                    },
-                    {
-                        text: 'Topup Sekarang',
-                        onPress: () => {
-                            navigation.navigate('Saldo');
-                        },
-                    },
-                ],
-                { cancelable: true }
-            );
+
+        if (!amount || amount <= 0) {
+            Alert.alert('Error', 'Nominal harus diisi dengan angka lebih dari 0');
             return;
         }
 
-        // Simulasi update
-        setSaldo(prev => prev - amount);
-        setTotalSedekah(prev => prev + amount);
-        setHistory(prev => [
-            { id: Date.now().toString(), type: 'masuk', amount, desc: keterangan, date: new Date().toLocaleDateString('id-ID') },
-            ...prev,
-        ]);
-        setModalVisible(false);
-        setNominal('');
-        setKeterangan('');
+        if (!keterangan || keterangan.trim() === '') {
+            Alert.alert('Error', 'Keterangan tidak boleh kosong');
+            return;
+        }
+
+        try {
+            const formData = {
+                nominal: amount,
+                keterangan: keterangan.trim(),
+            };
+
+            await postData('Transaksi/Sedekah', formData);
+            getDatabase();
+            setModalVisible(false);
+            setNominal('');
+            setKeterangan('');
+            Alert.alert('Sukses', 'Pembayaran berhasil.');
+        } catch (err) {
+            Alert.alert('Error', err?.message || "Transaksi gagal");
+            setLoading(false);
+        }
     };
+
 
     const handleNominalChange = (text) => {
         // Hapus semua karakter non angka
@@ -89,15 +87,33 @@ const SedekahScreen = ({ navigation }) => {
         return parseInt(numberString).toLocaleString('id-ID');
     };
 
+    const formatDateTime = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+
+        const monthNames = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        const month = monthNames[date.getMonth()];
+        const year = date.getFullYear();
+
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        return `${day} ${month} ${year} ${hours}:${minutes}`;
+    };
+
+
 
     const renderHistoryItem = ({ item }) => (
-        <View style={[styles.historyItem, item.type === 'masuk' ? styles.income : styles.expense]}>
+        <View style={[styles.historyItem, item.status === 'Income' ? styles.income : styles.expense]}>
             <View>
-                <Text style={styles.historyDesc}>{item.desc}</Text>
-                <Text style={styles.historyDate}>{item.date}</Text>
+                <Text style={styles.historyDesc}>{item.ket}</Text>
+                <Text style={styles.historyDate}>{formatDateTime(item.createdAt)}</Text>
             </View>
             <Text style={styles.historyAmount}>
-                {item.type === 'masuk' ? '+' : '-'} Rp {item.amount.toLocaleString('id-ID')}
+                {item.status === 'Income' ? '+' : '-'} Rp {item.nominal.toLocaleString('id-ID')}
             </Text>
         </View>
     );
@@ -114,7 +130,7 @@ const SedekahScreen = ({ navigation }) => {
                         <View style={styles.centerContent}>
                             <Icon name="hand-holding-heart" size={32} color="#214937" />
                             <Text style={styles.totalText}>Total Sedekah</Text>
-                            <Text style={styles.totalAmount}>Rp {totalSedekah.toLocaleString('id-ID')}</Text>
+                            <Text style={styles.totalAmount}>Rp {rekening?.toLocaleString('id-ID')}</Text>
                         </View>
 
                         {/* Tombol Sedekah */}
@@ -143,10 +159,7 @@ const SedekahScreen = ({ navigation }) => {
             >
                 <View style={styles.modalBackdrop}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Sedekah Sekarang</Text>
-
-                        {/* Saldo Saat Ini */}
-                        <Text style={styles.saldoText}>Saldo Anda: Rp {saldo.toLocaleString('id-ID')}</Text>
+                        <Text style={styles.modalTitle}>Sedekah</Text>
 
                         <TextInput
                             placeholder="Nominal"
