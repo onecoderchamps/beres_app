@@ -133,6 +133,23 @@ const ChatScreen = ({ data }) => {
         });
     };
 
+    const formatDateTime = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+
+        const monthNames = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        const month = monthNames[date.getMonth()];
+        const year = date.getFullYear();
+
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        return `${day} ${month} ${year} ${hours}:${minutes}`;
+    };
+
     return (
         <View style={[COMPONENT_STYLES.container, { padding: 0 }]}>
 
@@ -186,8 +203,10 @@ const ChatScreen = ({ data }) => {
                                 <View style={COMPONENT_STYLES.spacer} />
                             </>
                         )}
-                        <Text style={styles.messageText}>{msg.name}</Text>
+                        <Text style={styles.messageName}>{msg.name}</Text>
                         <Text style={styles.messageText}>{msg.message}</Text>
+                        <Text style={styles.messageTime}>{formatDateTime(msg.createdAt)}</Text>
+
                     </View>
                 ))}
             </ScrollView>
@@ -243,8 +262,17 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         backgroundColor: COLORS.primary,
     },
+    messageName: {
+        fontSize: 12,
+        color: COLORS.success,
+    },
     messageText: {
         fontSize: 16,
+        color: COLORS.background,
+    },
+    messageTime: {
+        marginTop: 10,
+        fontSize: 10,
         color: COLORS.background,
     },
     inputContainer: {
