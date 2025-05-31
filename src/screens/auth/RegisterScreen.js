@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View, Text, TextInput, Alert,
-  StyleSheet, Image, KeyboardAvoidingView,
+  View, Text, TextInput,
+  StyleSheet, KeyboardAvoidingView,
   Platform, TouchableWithoutFeedback, Keyboard,
-  TouchableOpacity,
-  StatusBar
+  TouchableOpacity, StatusBar,
+  Alert
 } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
-import { postData, putData } from '../../api/service';
+import { getData, postData } from '../../api/service';
+import Icon from 'react-native-vector-icons/Feather'; // Feather Icon
 
 const RegisterScreen = ({ navigation }) => {
   const [fullname, setFullname] = useState('');
@@ -15,34 +15,35 @@ const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [noNIK, setNoNIK] = useState('');
   const [address, setAddress] = useState('');
-
   const [loading, setLoading] = useState(false);
+  const [isAgreed, setIsAgreed] = useState(false);
+  const [isAgreedFee, setIsAgreedFee] = useState(false);
+  const [rekening, setrekening] = useState(0);
 
-
-  const formatPhoneNumber = (number) => {
-    const cleaned = number.replace(/[^0-9]/g, '');
-    if (cleaned.startsWith('08')) return '+62' + cleaned.slice(1);
-    if (cleaned.startsWith('62')) return '+62' + cleaned.slice(2);
-    if (cleaned.startsWith('8')) return '+62' + cleaned;
-    if (cleaned.startsWith('628')) return '+' + cleaned;
-    if (cleaned.startsWith('+628')) return cleaned;
-    return '+62' + cleaned;
+  const getDatabase = async () => {
+    try {
+      const rekening = await getData('rekening/SettingIuranTahunan');
+      setrekening(rekening.data);
+    } catch (error) {
+      Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+    }
   };
 
-  const checkPhoneExists = async (formattedPhone) => {
-    const snapshot = await firestore()
-      .collection('users')
-      .where('phone', '==', formattedPhone)
-      .limit(1)
-      .get();
-    return !snapshot.empty;
-  };
+  useEffect(() => {
+    getDatabase();
+  }, []);
 
   const handleRegister = async () => {
     if (!fullname || !address || !email || !noNIK) {
       Alert.alert('Error', 'Semua field wajib diisi.');
       return;
     }
+
+    if (!isAgreed || !isAgreedFee) {
+      Alert.alert('Error', 'Kamu harus menyetujui semua persyaratan terlebih dahulu.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -53,10 +54,14 @@ const RegisterScreen = ({ navigation }) => {
         address,
       };
       await postData('auth/updateProfile', userData);
+      Alert.alert('Sukses', 'Pendaftaran berhasil.');
       setLoading(false);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }], // atau 'Login', dsb.
+      });
     } catch (err) {
-      Alert.alert('Error', 'Terjadi kesalahan saat mendaftar.');
-    } finally {
+      Alert.alert('Error', err || "Transaksi Tahunan Selesai");
       setLoading(false);
     }
   };
@@ -99,17 +104,49 @@ const RegisterScreen = ({ navigation }) => {
             <Text style={styles.label}>Alamat</Text>
             <TextInput
               style={styles.input}
-              placeholder="Masukkan No NIK"
+              placeholder="Masukkan Alamat"
               keyboardType="default"
               value={address}
               onChangeText={setAddress}
               editable={!loading}
             />
 
+            {/* Ceklis 1 */}
             <TouchableOpacity
-              style={[styles.button, loading && styles.buttonLoading]}
-              onPress={handleRegister}
-              disabled={loading}
+              style={styles.checkboxContainer}
+              onPress={() => setIsAgreed(!isAgreed)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.checkboxBox, isAgreed && styles.checkboxChecked]}>
+                {isAgreed && <Icon name="check" size={16} color="#fff" />}
+              </View>
+              <Text style={styles.checkboxLabel}>
+                Saya setuju dengan <Text style={{ fontWeight: 'bold' }}>Syarat & Ketentuan</Text>
+              </Text>
+            </TouchableOpacity>
+
+            {/* Ceklis 2 */}
+            <TouchableOpacity
+              style={styles.checkboxContainer}
+              onPress={() => setIsAgreedFee(!isAgreedFee)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.checkboxBox, isAgreedFee && styles.checkboxChecked]}>
+                {isAgreedFee && <Icon name="check" size={16} color="#fff" />}
+              </View>
+              <Text style={styles.checkboxLabel}>
+                Saya setuju membayar uang koperasi sebesar <Text style={{ fontWeight: 'bold' }}>Rp {rekening.toLocaleString('id')}</Text>
+              </Text>
+            </TouchableOpacity>
+
+            <Text style={styles.note}>
+              Dengan mendaftar kamu sekalian membayar uang tahunan koperasi.
+            </Text>
+
+            <TouchableOpacity
+              style={[styles.button, (loading || !isAgreed || !isAgreedFee) && styles.buttonDisabled]}
+              onPress={() => handleRegister()}
+              disabled={loading || !isAgreed || !isAgreedFee}
             >
               <Text style={styles.buttonText}>
                 {loading ? 'Mendaftarkan...' : 'Daftar'}
@@ -127,15 +164,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     justifyContent: 'space-between',
-  },
-  logoContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logo: {
-    height: 120,
-    width: 120,
   },
   bottomContainer: {
     padding: 20,
@@ -156,15 +184,46 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     elevation: 1
   },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  checkboxBox: {
+    width: 22,
+    height: 22,
+    borderWidth: 1,
+    borderColor: '#aaa',
+    marginRight: 10,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  checkboxChecked: {
+    backgroundColor: '#214937',
+    borderColor: '#214937',
+  },
+  checkboxLabel: {
+    fontSize: 14,
+    color: '#333',
+    flexShrink: 1
+  },
+  note: {
+    fontSize: 12,
+    color: '#444',
+    marginBottom: 16,
+    fontStyle: 'italic',
+  },
   button: {
     backgroundColor: '#F3C623',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-    elevation: 1
+    elevation: 1,
   },
-  buttonLoading: {
-    backgroundColor: '#777',
+  buttonDisabled: {
+    backgroundColor: '#ccc',
   },
   buttonText: {
     color: 'black',

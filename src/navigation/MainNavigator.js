@@ -109,7 +109,8 @@ const HomeStack = () => (
         name="Register"
         component={RegisterScreen}
         options={{
-          title: 'Register',
+          title: 'Daftar Koperasi',
+          headerTitleAlign: 'center',
           headerShown: true,
           headerStyle: {
             backgroundColor: '#fff', // Mengatur warna latar belakang header

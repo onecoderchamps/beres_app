@@ -5,7 +5,7 @@ import {
     StatusBar,
     Dimensions,
     PermissionsAndroid,
-    Alert
+    Alert, InteractionManager
 } from 'react-native';
 import ImageSlider from './component/ImageSlider';
 import PatunganCard from './component/PatunganView';
@@ -29,12 +29,12 @@ const HomeScreen = ({ navigation }) => {
     const [dataProfile, setdataProfile] = useState("");
 
     const getDatabaseUser = async () => {
-        setLoading(true);
         try {
             const response = await getData('auth/verifySessions');
+            console.log(response)
             setdataProfile(response.data);
         } catch (error) {
-            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi OTP.");
+            Alert.alert("Error", error || "Terjadi kesalahan.");
             setLoading(false)
         }
     };
@@ -44,8 +44,7 @@ const HomeScreen = ({ navigation }) => {
             const response = await getData('rekening/Banner');
             setdata(response.data);
         } catch (error) {
-            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi OTP.");
-            setLoading(false)
+            Alert.alert("Error", error || "Terjadi kesalahan.");
         }
     };
 
@@ -144,11 +143,17 @@ const HomeScreen = ({ navigation }) => {
         } else if (cat === 'Patungan') {
             navigation.navigate('Patungan');
         } else if (cat === 'Koperasi') {
-            if(!dataProfile.isMember) {
+            if (!dataProfile.isMember) {
                 navigation.navigate('Register');
+            } else {
+                navigation.navigate('Koperasi');
             }
         } else if (cat === 'Sedekah') {
-            navigation.navigate('Sedekah');
+            if (!dataProfile.isMember) {
+                navigation.navigate('Register');
+            } else {
+                navigation.navigate('Sedekah');
+            }
         }
     }
 
@@ -162,7 +167,9 @@ const HomeScreen = ({ navigation }) => {
 
     useEffect(() => {
         getFCM()
-        requestPermissions();
+        InteractionManager.runAfterInteractions(() => {
+            requestPermissions();
+        });
     }, []);
 
     return (
@@ -174,7 +181,7 @@ const HomeScreen = ({ navigation }) => {
             <MembershipCard navigation={navigation} />
 
             <Text style={styles.sectionTitle}>Telusuri Kategori</Text>
-            <CategorySelector onSelect={handleCategorySelect} dataProfile={dataProfile} navigation={navigation}/>
+            <CategorySelector onSelect={handleCategorySelect} dataProfile={dataProfile} navigation={navigation} />
 
             {/* 3. Promo */}
             <Text style={styles.sectionTitle}>Promo Patungan</Text>

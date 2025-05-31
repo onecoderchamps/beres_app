@@ -15,6 +15,8 @@ import {
     FlatList,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { getData, postData } from '../../api/service';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const { width } = Dimensions.get('window');
 
@@ -27,15 +29,22 @@ const KoperasiScreen = ({ navigation }) => {
     const [keterangan, setKeterangan] = useState('');
     const [history, setHistory] = useState([]);
 
-    useEffect(() => {
-        setTimeout(() => {
-            setHistory([
-                { id: '1', amount: 150000, desc: 'Iuran Bulan Mei 2025', date: '05 Mei 2025' },
-                { id: '2', amount: 150000, desc: 'Iuran Bulan April 2025', date: '05 Apr 2025' },
-                { id: '3', amount: 150000, desc: 'Iuran Bulan Maret 2025', date: '05 Mar 2025' },
-            ]);
+    const [rekening, setrekening] = useState(0);
+
+    const getDatabase = async () => {
+        try {
+            const rekening = await getData('rekening/SettingIuranBulanan');
+            const transaksi = await getData('transaksi');
+            setHistory(transaksi.data.filter(item => item.type.includes('KoperasiBulanan')));
+            setrekening(rekening.data);
             setLoading(false);
-        }, 500);
+        } catch (error) {
+            Alert.alert("Error", error.response.data.message || "Terjadi kesalahan saat memverifikasi.");
+        }
+    };
+
+    useEffect(() => {
+        getDatabase();
     }, []);
 
     const handleTransfer = () => {
@@ -89,17 +98,66 @@ const KoperasiScreen = ({ navigation }) => {
         return parseInt(numberString).toLocaleString('id-ID');
     };
 
+    const formatDateTime = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+
+        const monthNames = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        const month = monthNames[date.getMonth()];
+        const year = date.getFullYear();
+
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        return `${day} ${month} ${year} ${hours}:${minutes}`;
+    };
+
     const renderHistoryItem = ({ item }) => (
         <View style={styles.historyItem}>
             <View>
-                <Text style={styles.historyDesc}>{item.desc}</Text>
-                <Text style={styles.historyDate}>{item.date}</Text>
+                <Text style={styles.historyTitle}>{item.ket}</Text>
+                <Text style={styles.historyDate}>{formatDateTime(item.createdAt)}</Text>
             </View>
-            <Text style={styles.historyAmount}>
-                - Rp {item.amount.toLocaleString('id-ID')}
+            <Text style={[styles.historyAmount, item.status === 'Income' ? styles.income : styles.expense]}>
+                {item.status === 'Income' ? '+ ' : '- '}Rp {item?.nominal?.toLocaleString('id-ID')}
             </Text>
         </View>
     );
+
+    const bayar = async () => {
+        try {
+            await postData('Transaksi/PayBulananKoperasi');
+            getDatabase();
+            Alert.alert('Sukses', 'Pembayaran berhasil.');
+        } catch (err) {
+            Alert.alert('Error', err || "Transaksi Bulanan Selesai");
+            setLoading(false);
+        }
+    };
+
+    const hasPaidThisMonth = () => {
+        const now = new Date();
+        return history.some(item => {
+            const paidDate = new Date(item.createdAt);
+            return (
+                paidDate.getMonth() === now.getMonth() &&
+                paidDate.getFullYear() === now.getFullYear()
+            );
+        });
+    };
+
+
+    if (loading) {
+        return (
+            <SafeAreaView style={styles.backgroundStyle}>
+                <StatusBar backgroundColor="#214937" barStyle="dark-content" />
+                <ActivityIndicator size="large" color="#214937" style={{ flex: 1, justifyContent: 'center' }} />
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={styles.backgroundStyle}>
@@ -111,19 +169,21 @@ const KoperasiScreen = ({ navigation }) => {
                     <>
                         <View style={styles.centerContent}>
                             <Icon name="money-check-alt" size={32} color="#3f2e3e" />
-                            <Text style={styles.totalText}>Total Iuran Dibayarkan</Text>
-                            <Text style={styles.totalAmount}>Rp {totalIuran.toLocaleString('id-ID')}</Text>
+                            <Text style={styles.totalText}>Iuran Wajib Bulanan</Text>
+                            <Text style={styles.totalAmount}>Rp {rekening.toLocaleString('id-ID')}</Text>
                         </View>
 
-                        <TouchableOpacity style={styles.iuranButton} onPress={() => setModalVisible(true)}>
-                            <Text style={styles.buttonText}>Bayar Iuran Bulan Ini</Text>
-                        </TouchableOpacity>
+                        {!hasPaidThisMonth() && (
+                            <TouchableOpacity style={styles.iuranButton} onPress={() => bayar()}>
+                                <Text style={styles.buttonText}>Bayar Iuran Bulan Ini</Text>
+                            </TouchableOpacity>
+                        )}
 
                         <Text style={styles.sectionTitle}>Riwayat Iuran</Text>
                         <FlatList
                             data={history}
                             renderItem={renderHistoryItem}
-                            keyExtractor={item => item.id}
+                            keyExtractor={(item) => item.id}
                             style={styles.historyList}
                         />
                     </>
@@ -217,22 +277,18 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     historyList: {
-        paddingBottom: 30,
+        marginBottom: 50,
     },
     historyItem: {
-        backgroundColor: '#fff',
-        padding: 12,
-        borderRadius: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 10,
-        elevation: 2,
-        borderLeftWidth: 5,
-        borderLeftColor: '#795548',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderColor: '#ddd',
     },
-    historyDesc: {
+    historyTitle: {
         fontSize: 15,
-        fontWeight: '500',
+        fontWeight: '600',
         color: '#333',
     },
     historyDate: {
@@ -240,9 +296,8 @@ const styles = StyleSheet.create({
         color: '#777',
     },
     historyAmount: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: 'bold',
-        color: '#f44336',
     },
     modalBackdrop: {
         flex: 1,
