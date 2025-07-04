@@ -2,8 +2,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Base URL API
-// const API_URL = 'https://beres-backend-609517395039.asia-southeast2.run.app/api/v1/';
-const API_URL = 'http://192.168.156.46:5000/api/v1/';
+const API_URL = 'https://beres-backend-609517395039.asia-southeast2.run.app/api/v1/';
+// const API_URL = 'http://192.168.156.46:5000/api/v1/';
 
 
 // Membuat instance Axios

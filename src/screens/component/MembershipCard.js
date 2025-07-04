@@ -39,43 +39,16 @@ const MembershipCard = ({ navigation }) => {
         </View>
         <View style={styles.membershipBox2}>
           <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => navigation.navigate('Saldo')}>
+            <Icon name="wallet-outline" size={24} color="#000" />
+            <Text style={styles.membershipValue2}>Transfer</Text>
+          </TouchableOpacity>
+          <View style={{margin:5}}></View>
+          <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => navigation.navigate('Saldo')}>
             <Icon name="plus-circle-outline" size={24} color="#000" />
             <Text style={styles.membershipValue2}>TopUp</Text>
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* Garis Pemisah */}
-      {/* <View
-        style={{
-          borderBottomColor: '#BFD8B8',
-          borderBottomWidth: 1,
-          marginVertical: 10,
-        }}
-      /> */}
-
-      {/* Tombol Aksi dengan Ikon
-      <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.actionButton}>
-          <Icon name="file-document-outline" size={24} color="#F3C623" />
-          <Text style={styles.buttonLabel}>Iuran</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionButton}>
-          <Icon name="bank-transfer-out" size={24} color="#F3C623" />
-          <Text style={styles.buttonLabel}>Tarik Tunai</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionButton}>
-          <Icon name="swap-horizontal" size={24} color="#F3C623" />
-          <Text style={styles.buttonLabel}>Transfer</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionButton}>
-          <Icon name="plus-circle-outline" size={24} color="#F3C623" />
-          <Text style={styles.buttonLabel}>Topup</Text>
-        </TouchableOpacity>
-      </View> */}
     </View>
   );
 };
@@ -99,8 +72,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   membershipBox2: {
-    alignItems: 'flex-end', // yang benar
-    justifyContent: 'center',
+    alignItems:'flex-end',
+    justifyContent:'flex-end',
+    flexDirection:'row',
     flex: 1,
   },
   membershipLabel: {

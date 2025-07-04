@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { getData, postData } from '../../api/service';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const { width } = Dimensions.get('window');
 
